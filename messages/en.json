@@ -1,0 +1,411 @@
+{
+  "home": {
+    "title": "Diaomao",
+    "banner": "Ship Faster | Charge Smarter | Scale Fearlessly",
+    "webTitle": "Diaomao – The Ultimate AI SaaS Starter Kit with Stripe, Credits & Docs",
+    "webDescription": "Next.js 14 + Prisma + PostgreSQL + Stripe + Clerk + Fumadocs. Production-ready pricing tiers, credit system, anonymous-to-auth onboarding, and beautiful docs — everything you need to launch and monetize your AI product in days, not months.",
+    "keywords": "AI SaaS template, Next.js boilerplate, Stripe billing, credit-based pricing, anonymous onboarding, Fumadocs, Prisma PostgreSQL, Clerk authentication"
+  },
+  "hero": {
+    "mainTitle": "Ship a paid AI product with",
+    "mainEyesOn": "Diaomao",
+    "description": "Pricing that upgrades itself. Credits that never leak. Docs that stay in sync. Stripe flows that just work. Diaomao is the full-stack chassis trusted by makers who refuse to waste another weekend on billing infrastructure.",
+    "button": "Get Diaomao →",
+    "about": "SSR-first • Mobile-perfected • Fingerprint → Clerk seamless onboarding",
+    "heroImageAlt": "Diaomao – Modern pricing, credit dashboard and documentation system",
+    "heroImageUrl": "https://r2.d8ger.com/default.webp"
+  },
+  "usage": {
+    "title": "From zero to paid users",
+    "eyesOn": "in 3 stupidly simple steps",
+    "description": "Everything is pre-wired. You just turn the knobs.",
+    "steps": [
+      {
+        "title": "Connect your stack",
+        "description": "Drop in Stripe, PostgreSQL, and Clerk keys. Your pricing page and credit system instantly become user-aware on day one.",
+        "iconKey": "Zap"
+      },
+      {
+        "title": "Tune your config",
+        "description": "Switch between monthly, yearly, and one-time credit packs with a single config flag. Upgrade paths, discounts, and CTAs auto-adapt to each user.",
+        "iconKey": "Settings"
+      },
+      {
+        "title": "Launch your story",
+        "description": "Beautiful docs, mega-menu navigation, and gradient-rich marketing pages — all driven by the same MDX files. Ship updates without touching CSS.",
+        "iconKey": "Rocket"
+      }
+    ]
+  },
+  "faq": {
+    "title": "Got questions?",
+    "description": "We’ve got answers.",
+    "items": [
+      {
+        "question": "What exactly is Diaomao?",
+        "answer": "The fastest way to launch a production-ready, monetized AI product. Next.js 14 + Prisma + PostgreSQL + Stripe + Clerk + beautiful docs — everything pre-built and battle-tested."
+      },
+      {
+        "question": "Can I sell both subscriptions AND one-time credit packs?",
+        "answer": "Absolutely. Toggle between monthly, yearly, and one-time purchases with a single config change. Upgrade buttons automatically route to Stripe Checkout or Customer Portal."
+      },
+      {
+        "question": "What happens to anonymous users?",
+        "answer": "They get a fingerprint ID and starter credits instantly. When they eventually sign in, their balance and history merge seamlessly — zero data loss, zero flicker."
+      },
+      {
+        "question": "How hard is it to customize navigation & docs?",
+        "answer": "Dead easy. Mega-menu, mobile pinning, and docs are all driven by simple JSON/MDX config. Change once, updates everywhere."
+      },
+      {
+        "question": "Is the entire Stripe lifecycle handled?",
+        "answer": "Yes. Checkout, Portal, webhooks, renewals, dunning, refunds, upgrades/downgrades — all idempotent and logged. You’ll never lose a payment event again."
+      }
+    ]
+  },
+
+  "moneyPrice": {
+    "title": "Choose Your Plan",
+    "subtitle": "Select the best option for your needs",
+    "billingSwitch": {
+      "options": [
+        {
+          "key": "monthly",
+          "name": "Monthly",
+          "unit": "/month",
+          "discountText": "",
+          "subTitle": "Billed Monthly"
+        },
+        {
+          "key": "yearly",
+          "name": "Yearly",
+          "unit": "/month",
+          "discountText": "Save {percent}%",
+          "subTitle": "Billed Annually"
+        },
+        {
+          "key": "onetime",
+          "name": "One-Time",
+          "unit": "Credit Pack",
+          "discountText": "Credit Pack",
+          "subTitle": "Pay Once"
+        }
+      ],
+      "defaultKey": "yearly"
+    },
+    "subscription": {
+      "plans": [
+        {
+          "key": "F1",
+          "title": "Hobby",
+          "showBillingSubTitle": false,
+          "features": [
+            { "description": "Basic features" },
+            { "description": "Community support" },
+            { "description": "Limited usage" },
+            { "description": "No credit card required" }
+          ]
+        },
+        {
+          "key": "P2",
+          "title": "Pro",
+          "showBillingSubTitle": true,
+          "features": [
+            {
+              "description": "All Free features",
+              "tag": "Hobby"
+            },
+            { "description": "Priority support" },
+            {
+              "description": "50 credits/month",
+              "tooltip": "1 credit = 1 AI generation"
+            },
+            { "description": "Advanced analytics" }
+          ]
+        },
+        {
+          "key": "U3",
+          "title": "Ultra",
+          "showBillingSubTitle": true,
+          "titleTags": ["Most Popular"],
+          "features": [
+            {
+              "description": "All Pro features",
+              "tag": "Pro"
+            },
+            {
+              "description": "200 credits/month",
+              "tooltip": "1 credit = 1 AI generation"
+            },
+            { "description": "Early access to new features" },
+            {
+              "description": "Dedicated support",
+              "tooltip": "24/7 priority support with dedicated account manager"
+            },
+            { "description": "Custom integrations" }
+          ]
+        }
+      ]
+    },
+    "credits": {
+      "plans": [
+        {
+          "key": "F1",
+          "title": "Starter",
+          "subtitle": "25 Credits",
+          "showBillingSubTitle": true,
+          "features": [
+            { "description": "525AI generations" },
+            { "description": "Perfect for trying out" },
+            { "description": "No expiration" },
+            { "description": "Instant activation" }
+          ]
+        },
+        {
+          "key": "P2",
+          "title": "Popular",
+          "subtitle": "150 Credits",
+          "showBillingSubTitle": true,
+          "titleTags": ["Preferred"],
+          "features": [
+            { "description": "150 AI generations" },
+            { "description": "Great for regular use" },
+            { "description": "No expiration" },
+            { "description": "Instant activation" },
+            { "description": "Support batch processing" }
+          ]
+        },
+        {
+          "key": "U3",
+          "title": "Power",
+          "subtitle": "350 Credits",
+          "showBillingSubTitle": true,
+          "features": [
+            { "description": "350 AI generations" },
+            { "description": "Perfect for heavy users" },
+            { "description": "No expiration" },
+            { "description": "Instant activation" }
+          ]
+        }
+      ]
+    },
+    "buttonTexts": {
+      "buyCredits": "Buy Credits",
+      "getStarted": "Get Started",
+      "getPro": "Get Pro",
+      "getUltra": "Get Ultra",
+      "currentPlan": "Current Plan",
+      "upgrade": "Upgrade"
+    }
+  },
+  "credit": {
+    "summary": {
+      "description": "Sum of all available credits",
+      "totalLabel": "Total Credits"
+    },
+    "buckets": {
+      "title": "Credit Breakdown",
+      "empty": "No credits yet",
+      "expiredAtLabel": "Expires",
+      "expandDetail": "Click to show credit details",
+      "hiddenDetail": "Click to hide credit details",
+      "labels": {
+        "free": "Free",
+        "subscription": "Subscription",
+        "onetime": "One-Time"
+      }
+    },
+    "subscription": {
+      "periodLabel": "Current Plan",
+      "manage": "Manage Subscription",
+      "inactive": "Free",
+      "pay": "Subscribe Now"
+    },
+    "onetime": {
+      "buy": "Buy One-Time Credits Pack"
+    }
+  },
+  "features": {
+    "title": "Everything you keep rebuilding",
+    "eyesOn": "Diaomao already solved",
+    "description": "Stop gluing together half-baked solutions. This is the template that ends the weekend billing nightmares.",
+    "items": [
+      {
+        "title": "Money Price 2.0",
+        "description": "Monthly / Yearly / One-time toggle that instantly reflects the user’s current plan. Discount badges, upgrade guards, and SSR defaults — all automatic.",
+        "iconKey": "Sparkles"
+      },
+      {
+        "title": "Credit System",
+        "description": "Buckets, expiration tags, and smart CTAs. Desktop = modals. Mobile = redirects. Zero confusion, maximum upsells.",
+        "iconKey": "Gift"
+      },
+      {
+        "title": "Auth and Anonymous",
+        "description": "Fingerprint on first visit → starter credits → seamless merge on sign-in. No flicker, no balance loss, no support tickets.",
+        "iconKey": "Fingerprint"
+      },
+      {
+        "title": "Docs & Navigation",
+        "description": "Fumadocs + mega-menu header. One source of truth for marketing and documentation. Mobile pinning, dark mode, and accessibility included.",
+        "iconKey": "BookOpen"
+      }
+    ]
+  },
+  "gallery": {
+    "titleL": "Gallery of",
+    "eyesOn": "Diaomao",
+    "titleR": "Creations",
+    "description": "Swipe through the built-in UI language: gradient CTAs, pill billing toggles, credit buckets, and docs hero visuals.",
+    "button": {
+      "title": "Preview the template",
+      "href": "https://newspaper-template.org/",
+      "align": "center"
+    },
+    "defaultImgUrl": "https://r2.d8ger.com/default.webp",
+    "downloadPrefix": "diaomao",
+    "prompts": [
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/1.webp",
+        "altMsg": "Pricing grid with Money Price gradients and discount badges"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/2.webp",
+        "altMsg": "Credit Overview dropdown showing buckets and CTA buttons"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/3.webp",
+        "altMsg": "Fumadocs hero with banner, cards, and responsive layout"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/4.webp",
+        "altMsg": "Header mega menu with pinned mobile actions and secondary buttons"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/5.webp",
+        "altMsg": "Fingerprint status panel summarizing anonymous onboarding"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/6.webp",
+        "altMsg": "Stripe lifecycle blueprint for subscriptions and one-time payments"
+      }
+    ]
+  },
+  "tips": {
+    "title": "Tips for Getting the Best Results with",
+    "eyesOn": "Diaomao",
+    "sections": [
+      {
+        "title": "Configure before coding",
+        "description": "Pricing, credits, navigation, and CTAs are config-driven—tune parameters before touching code."
+      },
+      {
+        "title": "Keep billing options",
+        "description": "Even if you default to onetime, leave monthly/yearly available to avoid dead ends."
+      },
+      {
+        "title": "Honor device behaviors",
+        "description": "Mobile uses redirects/auth then closes; desktop can modal—follow the design guide."
+      },
+      {
+        "title": "Prefer SSR context",
+        "description": "Use InitUserContext to prehydrate user state—no first-screen jitter, billing defaults match reality."
+      },
+      {
+        "title": "Follow the schema",
+        "description": "Stick to Users/Subscriptions/Transactions/Credits; order_id + event.id keep webhooks idempotent."
+      },
+      {
+        "title": "Tell the story in docs",
+        "description": "Use Fumadocs cards and banners to ship product narrative and releases without extra styling."
+      }
+    ]
+  },
+  "seoContent": {
+    "title": "The AI-era product chassis with",
+    "eyesOn": "Diaomao",
+    "description": "Pricing, credits, docs, navigation, and Stripe orchestrated as one.",
+    "intro": "Diaomao compresses the slowest parts of shipping AI products into one template: Money Price runs subscription/onetime in parallel, Credit Overview governs buckets and CTA matrix, fingerprint-to-Clerk prevents funnel gaps, Stripe lifecycle and schema are pre-aligned, and Fumadocs + Header keep story and navigation consistent.",
+    "sections": [
+      {
+        "title": "Pricing that adapts to user state",
+        "content": "Billing pills switch monthly|yearly|onetime; SSR defaults to the user’s plan, and upgrade buttons honor enableSubscriptionUpgrade with Portal fallback."
+      },
+      {
+        "title": "Credits with clear buckets and CTA matrix",
+        "content": "Buckets, expiry hints, and device-aware actions: desktop modals or auth-to-Portal, mobile redirects or custom handlers."
+      },
+      {
+        "title": "Anonymous-first onboarding",
+        "content": "Fingerprint issues `fp_xxx`, grants starter credits, and writes records; after login the same context continues with balances and audit intact."
+      },
+      {
+        "title": "Stripe lifecycle baked in",
+        "content": "Checkout|Portal, async confirmation, renewal, past-due, refund, end-of-period cancel, upgrade|downgrade—all guarded by order_id metadata and webhook idempotency."
+      },
+      {
+        "title": "Navigation and docs that scale",
+        "content": "Header mega menu, pinned behaviors, and actionOrders keep Docs|pricing|auth buttons in place; Fumadocs cards and banners ship with no extra styling."
+      },
+      {
+        "title": "Schema-first reliability",
+        "content": "Users, Subscriptions, Credits, Transactions, CreditAuditLog indexed for fingerprint lookup, order routing, and audit stability."
+      }
+    ],
+    "conclusion": "Plug in keys, tune config, fill copy—launch an AI-ready, revenue-ready, story-ready site in a week."
+  },
+  "cta": {
+    "title": "Start shipping your AI idea with",
+    "eyesOn": "Diaomao",
+    "description1": "One template. Every hard part solved.",
+    "description2": "Stripe, credits, auth— all production-ready out of the box.",
+    "button": "Get Diaomao Now →",
+    "url": "https://newspaper-template.org/"
+  },
+  "languageDetection": {
+    "title": "Language Detection",
+    "description": "Would you like to switch to",
+    "close": "No, thanks",
+    "changeAction": "Yes, switch"
+  },
+  "footer": {
+    "company": "WindRun · Huaiin",
+    "copyright": "Copyright © {year} {name} All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "dpa": "Data Protection Agreement",
+    "sitemap": "Sitemap",
+    "contactUs": "Contact Us",
+    "email": "xyb5to0zcy@gmail.com",
+    "clickToCopyText": "Click to copy",
+    "copiedText": "Copied!",
+    "thanks": "Thanks to"
+  },
+  "clerk": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signUpBonus": "+2",
+    "signUpBonusTooltip": "Sign up and get 2 free credits!"
+  },
+  "linkPreview": {
+    "blog": "Blog",
+    "pricing": "Pricing",
+    "legal": "Legal",
+    "docs": "Docs"
+  },
+  "fuma": {
+    "search": "Search",
+    "searchNoResult": "No results found",
+    "toc": "On this page",
+    "tocNoHeadings": "No Headings",
+    "lastUpdate": "Last updated on",
+    "emptyLastUpdate": "Ooops, Ages ago!",
+    "chooseLanguage": "Choose a language",
+    "nextPage": "Next Page",
+    "previousPage": "Previous Page",
+    "chooseTheme": "Theme",
+    "copyMarkdown": "Copy page as Markdown",
+    "copyMarkdownDone": "Copied!",
+    "editOnGithub": "Edit this page on GitHub"
+  }
+}

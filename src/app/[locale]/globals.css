@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+@source "../../../node_modules/@windrun-huaiin/third-ui/src/**/*.{js,ts,jsx,tsx}";
+@source "../../../node_modules/@windrun-huaiin/base-ui/src/**/*.{js,ts,jsx,tsx}";
+@source "../../../src/**/*.{js,ts,jsx,tsx}";
+
+@import '@windrun-huaiin/third-ui/styles/third-ui.css';

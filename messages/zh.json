@@ -1,0 +1,395 @@
+{
+  "home": {
+    "title": "迪奥猫",
+    "banner": "再思 | 再义 | 再构",
+    "webTitle": "迪奥猫 AI 产品编排模板 | 定价·积分·文档·Stripe",
+    "webDescription": "为 AI 时代提速：迪奥猫 集成 Next.js + Prisma + PostgreSQL + Stripe，内置定价、积分闸机、文档与导航，准备好真实支付与增长场景。",
+    "keywords": "AI 产品模板, Next.js SaaS, Stripe 定价, 积分计费 UI, Fumadocs, Prisma PostgreSQL, 匿名指纹, 价格组件, 积分管理"
+  },
+  "hero": {
+    "mainTitle": "用 迪奥猫 构建 AI 产品",
+    "mainEyesOn": "迪奥猫",
+    "description": "为 AI 时代编排的模板：懂用户态的定价，指引升级的积分引擎，同步的文档与导航，以及现成可用的 Stripe 流程。",
+    "button": "开始使用",
+    "about": "SSR 稳定、适配移动端，已内置指纹到 Clerk 的首访引导",
+    "heroImageAlt": "迪奥猫 模板展示定价卡、积分总览与文档导航",
+    "heroImageUrl": "https://r2.d8ger.com/default.webp"
+  },
+  "usage": {
+    "title": "三步搞定",
+    "eyesOn": "快速上线",
+    "description": "AI + 产品编排的一站式底座，配置即可上线。",
+    "steps": [
+      {
+        "title": "接通底座",
+        "description": "填好 Stripe 密钥、PostgreSQL、Clerk，InitUserContext + Prisma schema 让 SSR 定价与积分即刻有数据。",
+        "iconKey": "MousePointerClick"
+      },
+      {
+        "title": "编排产品",
+        "description": "在配置里调计费开关、积分桶、CTA 行为；Money Price 与 Credit Overview 自动随用户态和端别响应。",
+        "iconKey": "Pencil"
+      },
+      {
+        "title": "上线叙事",
+        "description": "Fumadocs + Header Mega Menu 同步导航与内容，渐变与可访问性已校准到移动与桌面。",
+        "iconKey": "Download"
+      }
+    ]
+  },
+  "faq": {
+    "title": "常见问题",
+    "description": "核心流程已预置，以下回答帮助你快速落地。",
+    "items": [
+      {
+        "question": "迪奥猫 是什么？",
+        "answer": "一套 AI 时代的产品模板：Next.js + Prisma + PostgreSQL + Stripe，内置 Money Price、Credit Overview、指纹到 Clerk 引导，以及 Fumadocs 导航/文档。"
+      },
+      {
+        "question": "支持订阅和一次性积分包吗？",
+        "answer": "支持。Money Price 同时覆盖订阅与一次性积分包，计费开关可配置，升级按钮有 Portal/Checkout 双路兜底。"
+      },
+      {
+        "question": "匿名用户如何处理？",
+        "answer": "首访生成指纹 ID、发放体验积分并建表；登录后沿用同一上下文，额度不丢失，SSR 避免首屏抖动。"
+      },
+      {
+        "question": "导航和文档能自定义吗？",
+        "answer": "可以。Header 支持 mega menu、移动端 pinned 行为与二级按钮；Fumadocs 用配置驱动卡片、Banner 与端上排序。"
+      },
+      {
+        "question": "Stripe 覆盖哪些生命周期？",
+        "answer": "Checkout/Portal、异步确认、续费、欠费、退款、周期末取消、升级/降级都映射到 Transactions/Subscriptions，event.id + order_id 防重复。"
+      }
+    ]
+  },
+  "moneyPrice": {
+    "title": "选择你的方案",
+    "subtitle": "按需选择最合适的套餐",
+    "billingSwitch": {
+      "options": [
+        {
+          "key": "monthly",
+          "name": "月付",
+          "unit": "/月",
+          "discountText": "",
+          "subTitle": "按月计费"
+        },
+        {
+          "key": "yearly",
+          "name": "年付",
+          "unit": "/月",
+          "discountText": "立省 {percent}%",
+          "subTitle": "按年计费"
+        },
+        {
+          "key": "onetime",
+          "name": "一次性",
+          "unit": "积分包",
+          "discountText": "积分包",
+          "subTitle": "一次支付"
+        }
+      ],
+      "defaultKey": "yearly"
+    },
+    "subscription": {
+      "plans": [
+        {
+          "key": "F1",
+          "title": "Hobby",
+          "showBillingSubTitle": false,
+          "features": [
+            { "description": "基础功能" },
+            { "description": "社区支持" },
+            { "description": "限量使用" },
+            { "description": "无需信用卡" }
+          ]
+        },
+        {
+          "key": "P2",
+          "title": "Pro",
+          "showBillingSubTitle": true,
+          "features": [
+            { "description": "包含 Free 全部功能", "tag": "Hobby" },
+            { "description": "优先支持" },
+            { "description": "50 积分/月", "tooltip": "1 积分 = 1 次 AI 生成" },
+            { "description": "高级分析" }
+          ]
+        },
+        {
+          "key": "U3",
+          "title": "Ultra",
+          "showBillingSubTitle": true,
+          "titleTags": ["最受欢迎"],
+          "features": [
+            { "description": "包含 Pro 全部功能", "tag": "Pro" },
+            { "description": "200 积分/月", "tooltip": "1 积分 = 1 次 AI 生成" },
+            { "description": "新功能抢先体验" },
+            { "description": "专属支持", "tooltip": "7x24 小时专属经理" },
+            { "description": "定制化集成" }
+          ]
+        }
+      ]
+    },
+    "credits": {
+      "plans": [
+        {
+          "key": "F1",
+          "title": "Starter",
+          "subtitle": "25 积分",
+          "showBillingSubTitle": true,
+          "features": [
+            { "description": "25 次 AI 生成" },
+            { "description": "试用首选" },
+            { "description": "无过期" },
+            { "description": "即时生效" }
+          ]
+        },
+        {
+          "key": "P2",
+          "title": "Popular",
+          "subtitle": "150 积分",
+          "showBillingSubTitle": true,
+          "titleTags": ["推荐"],
+          "features": [
+            { "description": "150 次 AI 生成" },
+            { "description": "常规使用" },
+            { "description": "无过期" },
+            { "description": "即时生效" },
+            { "description": "支持批量" }
+          ]
+        },
+        {
+          "key": "U3",
+          "title": "Power",
+          "subtitle": "350 积分",
+          "showBillingSubTitle": true,
+          "features": [
+            { "description": "350 次 AI 生成" },
+            { "description": "重度使用" },
+            { "description": "无过期" },
+            { "description": "即时生效" }
+          ]
+        }
+      ]
+    },
+    "buttonTexts": {
+      "buyCredits": "购买积分",
+      "getStarted": "开始使用",
+      "getPro": "获取 Pro",
+      "getUltra": "获取 Ultra",
+      "currentPlan": "当前套餐",
+      "upgrade": "升级"
+    }
+  },
+  "credit": {
+    "summary": {
+      "description": "所有可用积分总和",
+      "totalLabel": "总积分"
+    },
+    "buckets": {
+      "title": "积分明细",
+      "empty": "暂无积分",
+      "expiredAtLabel": "到期",
+      "expandDetail": "点击展开积分详情",
+      "hiddenDetail": "点击收起积分详情",
+      "labels": {
+        "free": "体验积分",
+        "subscription": "订阅积分",
+        "onetime": "一次性积分"
+      }
+    },
+    "subscription": {
+      "periodLabel": "当前套餐",
+      "manage": "管理订阅",
+      "inactive": "免费",
+      "pay": "立即订阅"
+    },
+    "onetime": {
+      "buy": "购买一次性积分包"
+    }
+  },
+  "features": {
+    "title": "为什么选择",
+    "eyesOn": "迪奥猫",
+    "description": "AI + 产品编排的底盘：启动快，也能稳收款。",
+    "items": [
+      {
+        "title": "Money Price 2.0",
+        "description": "monthly/yearly/onetime 依用户态切换，折扣徽标、升级护栏与 SSR 默认值同步就绪。",
+        "iconKey": "Sparkles"
+      },
+      {
+        "title": "Credit Overview 体验",
+        "description": "积分桶、到期提示与 CTA 矩阵，桌面弹窗与移动跳转各有最佳实践。",
+        "iconKey": "Gift"
+      },
+      {
+        "title": "指纹到 Clerk",
+        "description": "匿名用户获指纹与体验积分；登录平滑升级，额度不丢、首屏不闪。",
+        "iconKey": "MessageCircleMore"
+      },
+      {
+        "title": "文档与导航体系",
+        "description": "Fumadocs + Header Mega Menu 让营销与 Docs 统一视觉，移动端可 pin 关键行动。",
+        "iconKey": "MessageCircleMore"
+      }
+    ]
+  },
+  "gallery": {
+    "titleL": "图库",
+    "eyesOn": "迪奥猫",
+    "titleR": "范例",
+    "description": "一眼看懂内置的 UI 语言：渐变 CTA、计费胶囊、积分桶与文档英雄区。",
+    "button": {
+      "title": "预览模板",
+      "href": "https://newspaper-template.org/",
+      "align": "center"
+    },
+    "defaultImgUrl": "https://r2.d8ger.com/default.webp",
+    "downloadPrefix": "迪奥猫",
+    "prompts": [
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/1.webp",
+        "altMsg": "带渐变与折扣徽标的定价网格"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/2.webp",
+        "altMsg": "展示积分桶与 CTA 的积分下拉"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/3.webp",
+        "altMsg": "带 Banner 与卡片的 Fumadocs 英雄区"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/4.webp",
+        "altMsg": "含 pinned 行为与二级按钮的 Header mega menu"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/5.webp",
+        "altMsg": "概览匿名引导的指纹状态面板"
+      },
+      {
+        "url": "https://r2.d8ger.com/Reve-Image/6.webp",
+        "altMsg": "订阅与一次性支付的 Stripe 生命周期蓝图"
+      }
+    ]
+  },
+  "tips": {
+    "title": "使用提示",
+    "eyesOn": "迪奥猫",
+    "sections": [
+      {
+        "title": "先配再改",
+        "description": "定价、积分、导航、CTA 皆由配置/翻译驱动，先调参数再写代码。"
+      },
+      {
+        "title": "保留计费切换",
+        "description": "即便默认 onetime，也请保留 monthly/yearly 入口，避免锁死用户。"
+      },
+      {
+        "title": "适配端别",
+        "description": "移动端用跳转/鉴权再收起；桌面可弹窗，滚动与关闭时机遵循设计稿。"
+      },
+      {
+        "title": "SSR 优先",
+        "description": "用 InitUserContext 预注入用户态，消除首屏抖动，计费默认值贴合真实订阅。"
+      },
+      {
+        "title": "按模型填数",
+        "description": "遵循 Users/Subscriptions/Transactions/Credits 模型，order_id + event.id 保障 webhook 幂等。"
+      },
+      {
+        "title": "用 Docs 讲故事",
+        "description": "Fumadocs 卡片与 Banner 可直接复用，用它同步产品叙事与版本发布。"
+      }
+    ]
+  },
+  "seoContent": {
+    "title": "AI 时代的产品底盘",
+    "eyesOn": "迪奥猫",
+    "description": "定价、积分、文档、导航与 Stripe 一体化编排",
+    "intro": "迪奥猫 把 AI 产品最耗时的环节收拢到一套模板：Money Price 同时跑订阅/一次性，Credit Overview 管控积分与 CTA 矩阵，指纹到 Clerk 避免漏斗断层，Stripe 生命周期与表结构预先对齐，Fumadocs + Header 让叙事与导航保持一致。",
+    "sections": [
+      {
+        "title": "可感知用户态的定价",
+        "content": "计费胶囊切换 monthly/yearly/onetime，SSR 默认随订阅态调整，升级按钮遵守 enableSubscriptionUpgrade 并有 Portal 兜底。"
+      },
+      {
+        "title": "清晰积分与 CTA 矩阵",
+        "content": "积分分桶、到期提示、端别动作：桌面弹窗或鉴权到 Portal，移动端跳转或自定义 handler。"
+      },
+      {
+        "title": "匿名优先的引导",
+        "content": "指纹生成 `fp_xxx` 即送体验额度并建表；登录后同一上下文续用，额度与审计无损衔接。"
+      },
+      {
+        "title": "内建 Stripe 生命周期",
+        "content": "Checkout/Portal、异步确认、续费、欠费、退款、周期末取消、升降级全覆盖，order_id 元数据 + webhook 幂等守护。"
+      },
+      {
+        "title": "可扩展的文档与导航",
+        "content": "Header mega menu、pinned 行为与 actionOrders 让 Docs/定价/登录按钮各就其位；Fumadocs 卡片与 Banner 免样式即用。"
+      },
+      {
+        "title": "Schema-first 稳定性",
+        "content": "Users, Subscriptions, Credits, Transactions, CreditAuditLog 预布索引，指纹检索、订单路由、审计链路稳定。"
+      }
+    ],
+    "conclusion": "接好密钥、调完配置、填入文案——一周交付可收款、能讲故事、能度量的 AI 产品站。"
+  },
+  "cta": {
+    "title": "让你的 AI 产品落地，用",
+    "eyesOn": "迪奥猫",
+    "description1": "一套模板搞定定价、积分、文档、导航与 Stripe。",
+    "description2": "渐变、可访问性、移动体验都已调好。",
+    "button": "立即开始",
+    "url": "https://newspaper-template.org/"
+  },
+  "languageDetection": {
+    "title": "语言切换",
+    "description": "是否切换到",
+    "close": "不用了",
+    "changeAction": "是的，切换"
+  },
+  "footer": {
+    "company": "WindRun · Huaiin",
+    "copyright": "Copyright © {year} {name} All rights reserved.",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "dpa": "数据保护协议",
+    "sitemap": "站点地图",
+    "contactUs": "联系我们",
+    "email": "xyb5to0zcy@gmail.com",
+    "clickToCopyText": "点击复制",
+    "copiedText": "已复制!",
+    "thanks": "特别感谢"
+  },
+  "clerk": {
+    "signIn": "登录",
+    "signUp": "注册",
+    "signUpBonus": "+2",
+    "signUpBonusTooltip": "注册就送2个积分!"
+  },
+  "linkPreview": {
+    "blog": "博客",
+    "pricing": "定价",
+    "legal": "法律",
+    "docs": "文档"
+  },
+  "fuma": {
+    "search": "搜索",
+    "searchNoResult": "未找到结果",
+    "toc": "目录",
+    "tocNoHeadings": "暂无标题",
+    "lastUpdate": "最后更新",
+    "emptyLastUpdate": "无更新",
+    "chooseLanguage": "选择语言",
+    "nextPage": "下一页",
+    "previousPage": "上一页",
+    "chooseTheme": "主题",
+    "copyMarkdown": "复制为Markdown",
+    "copyMarkdownDone": "已复制！",
+    "editOnGithub": "在GitHub上编辑此页"
+  }
+}
