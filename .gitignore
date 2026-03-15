@@ -138,3 +138,4 @@ dist
 
 
 /generated/prisma
+.vscode/settings.json

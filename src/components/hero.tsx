@@ -1,43 +1,31 @@
- import Image from "next/image"
-import { getTranslations } from 'next-intl/server'
-import { globalLucideIcons as icons} from '@windrun-huaiin/base-ui/components/server'
-import { GradientButton } from "@windrun-huaiin/third-ui/fuma/mdx"
+ import { getTranslations } from 'next-intl/server'
+import { HeroClient } from './hero-client'
 
 export async function Hero({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'hero' });
 
   return (
-    <section className="mx-auto mt-12 max-w-6xl flex flex-col gap-10 px-4 py-8 md:flex-row md:items-center md:gap-12">
-      <div className="flex-1 space-y-6">
-        <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-          {t('mainTitle')}<br />{" "}
-          <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-600">{t('mainEyesOn')}</span>
-        </h1>
-        <p className="text-lg text-gray-400 max-w-2xl">
-          {t('description')}
-        </p>
-        <GradientButton
-          title={t('button')}
-          href="https://newspaper-template.org/"
-          align="center"
-          className="md:w-full"
-        />
-        <div className="flex items-center gap-2 text-sm text-gray-400">
-          <icons.Zap className="h-4 w-4" />
-          <span>{t('about')}</span>
+    <section className="relative w-full overflow-hidden py-8 md:py-12">
+      {/* Background warm ambient light */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-linear-to-b from-rose-400/20 via-orange-300/10 to-transparent blur-[100px] pointer-events-none -z-10" />
+      
+      <div className="mx-auto max-w-5xl px-4 flex flex-col items-center">
+        {/* Centered Title Area */}
+        <div className="text-center mb-6 space-y-3 max-w-2xl mx-auto z-10">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-gray-50">
+            {t('mainTitle')}{" "}
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-rose-500 to-orange-400">
+              {t('mainEyesOn')}
+            </span>
+          </h1>
+          <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 font-medium">
+            {t('description')}
+          </p>
         </div>
-      </div>
-      <div className="flex-1 relative flex justify-center md:justify-end">
-        <div className="rounded-lg overflow-hidden shadow-purple-500/20 group">
-          <Image
-            src={t('heroImageUrl')}
-            alt={t('heroImageAlt')}
-            width={500}
-            height={500}
-            priority
-            className="h-auto w-full rounded-lg transition duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 35vw"
-          />
+
+        {/* Centered Chat Component */}
+        <div className="w-full max-w-3xl relative z-10">
+          <HeroClient />
         </div>
       </div>
     </section>
