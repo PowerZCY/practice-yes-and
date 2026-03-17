@@ -1,4 +1,4 @@
- import { getTranslations } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import { HeroClient } from './hero-client'
 
 export async function Hero({ locale }: { locale: string }) {
@@ -7,7 +7,7 @@ export async function Hero({ locale }: { locale: string }) {
   return (
     <section className="relative w-full overflow-hidden py-8 md:py-12">
       {/* Background warm ambient light */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-linear-to-b from-rose-400/20 via-orange-300/10 to-transparent blur-[100px] pointer-events-none -z-10" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-linear-to-b from-rose-400/20 via-orange-300/10 to-transparent blur-[120px] pointer-events-none -z-10 animate-pulse duration-3000" />
       
       <div className="mx-auto max-w-5xl px-4 flex flex-col items-center">
         {/* Centered Title Area */}

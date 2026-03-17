@@ -9,7 +9,7 @@ const appHeaders = {
 }
 
 // 公共的mock处理逻辑
-async function handleMockResponse(mockType: 'image' | 'txt' | 'audio' | 'video' | 'file', params: any) {
+async function handleMockResponse(mockType: 'image' | 'txt' | 'audio' | 'video' | 'file') {
   if (!appConfig.openrouterAI.enableMock) {
     return null;
   }
@@ -29,9 +29,7 @@ async function handleMockResponse(mockType: 'image' | 'txt' | 'audio' | 'video' 
   }
   
   if (mockType === 'txt') {
-    const { messages, context } = params;
-    const lastMsg = messages[messages.length - 1]?.content || '';
-    const mockTextResult = `[MockData-${context}] You said: "${lastMsg}". Yes, and that's a great observation! This is a mock streaming response simulating the AI's behavior.`;
+    const mockTextResult = "HAOHAOHHHHH" ;
     return { text: mockTextResult }; // To support streaming correctly in mock we would need to mock the stream itself, but we return simple text for the check here
   }
   
@@ -56,7 +54,7 @@ export async function POST(request: Request) {
 
   // 检查mock模式 (For simplicity, if mock is enabled, we return a standard JSON, 
   // though real use case expects a stream. The AI SDK handles fallback well but ideally we mock the stream.)
-  const mockResponse = await handleMockResponse('txt', { messages, context });
+  const mockResponse = await handleMockResponse('txt');
   if (mockResponse) {
     // Return a fake stream string using a simple Response
     return new Response(mockResponse.text);
