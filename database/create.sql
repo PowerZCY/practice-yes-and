@@ -25,6 +25,31 @@ WHERE status <> 'deleted';
 
 CREATE INDEX IF NOT EXISTS idx_users_fingerprint_id ON yesand.users (fingerprint_id);
 
+-- 对话会话表
+CREATE TABLE IF NOT EXISTS yesand.chat_sessions (
+    id                BIGSERIAL PRIMARY KEY,
+    session_id        VARCHAR(100) NOT NULL,
+    user_id           UUID         NOT NULL,
+    mode              VARCHAR(50)  NOT NULL,
+    category          VARCHAR(50),
+    messages          JSONB        NOT NULL DEFAULT '[]'::jsonb,
+    is_pinned         INTEGER      NOT NULL DEFAULT 0,
+    session_name      VARCHAR(255),
+    created_at        TIMESTAMPTZ  DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMPTZ  DEFAULT CURRENT_TIMESTAMP,
+    deleted           INTEGER      NOT NULL DEFAULT 0,
+    CONSTRAINT chat_sessions_session_id_key UNIQUE (session_id),
+    CONSTRAINT chat_sessions_mode_check CHECK (mode::text = ANY (ARRAY['idea'::character varying, 'practice'::character varying]::text[])),
+    CONSTRAINT chat_sessions_category_check CHECK (category IS NULL OR category::text = ANY (ARRAY['workplace'::character varying, 'relationships'::character varying, 'social'::character varying, 'creative'::character varying, 'parenting'::character varying]::text[])),
+    CONSTRAINT chat_sessions_deleted_check CHECK (deleted = ANY (ARRAY[0, 1])),
+    CONSTRAINT chat_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES yesand.users(user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_id ON yesand.chat_sessions (user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_updated_at ON yesand.chat_sessions (updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_id_updated_at ON yesand.chat_sessions (user_id, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_id_is_pinned_updated_at ON yesand.chat_sessions (user_id, is_pinned DESC, updated_at DESC);
+
 -- 订阅表
 CREATE TABLE IF NOT EXISTS yesand.subscriptions (
     id                   BIGSERIAL PRIMARY KEY,
@@ -173,4 +198,3 @@ CREATE TABLE IF NOT EXISTS yesand.apilog (
     response      TEXT,
     created_at    TIMESTAMPTZ  DEFAULT CURRENT_TIMESTAMP
 );
-

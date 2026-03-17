@@ -15,20 +15,20 @@ import {
   History,
   Trash2,
   X,
-  Plus
+  Plus,
+  Pin,
+  Pencil
 } from "lucide-react";
-
-type Mode = "idea" | "practice";
-type PracticeCategory = "workplace" | "relationships" | "social" | "creative" | "parenting" | null;
-type Message = { id: string, role: 'user' | 'assistant' | 'system', content: string };
-
-type Session = {
-  id: string;
-  mode: Mode;
-  category: PracticeCategory;
-  messages: Message[];
-  updatedAt: number;
-};
+import {
+  getSessionDisplayTitle,
+  getSessionPreview,
+  HIDDEN_SYSTEM_COMMAND,
+  isHiddenSessionMessage,
+  type Message,
+  type Mode,
+  type PracticeCategory,
+  type Session,
+} from "@/lib/chat-session";
 
 const categories = [
   { id: "parenting", label: "Parent-Child", icon: Baby, color: "text-rose-500", bg: "bg-rose-50" },
@@ -39,22 +39,21 @@ const categories = [
 ] as const;
 
 
-const TooltipTop = ({ children, text }: { children: React.ReactNode, text: string }) => (
-  <div className="relative group/tooltip flex">
+const TooltipTop = ({ children, text, className }: { children: React.ReactNode, text: string, className?: string }) => (
+  <div className={`relative group/tooltip flex ${className || ''}`}>
     {children}
-    <div className="absolute bottom-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-white/95 border border-gray-100 backdrop-blur-md text-gray-600 text-xs font-bold rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl shadow-gray-200/40 z-50 scale-95 group-hover/tooltip:scale-100">
+    <div className="absolute bottom-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-white/95 border border-gray-100 backdrop-blur-md text-gray-700 text-xs font-bold rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl shadow-gray-200/40 z-50 scale-95 group-hover/tooltip:scale-100">
       {text}
       <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white/95" />
     </div>
   </div>
 );
 
-const TooltipBottom = ({ children, text }: { children: React.ReactNode, text: string }) => (
-  <div className="relative group/tooltip flex">
+const TooltipBottom = ({ children, text, className }: { children: React.ReactNode, text: string, className?: string }) => (
+  <div className={`relative group/tooltip flex ${className || ''}`}>
     {children}
-    <div className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-white/95 border border-gray-100 backdrop-blur-md text-gray-600 text-xs font-bold rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl shadow-gray-200/40 z-50 scale-95 group-hover/tooltip:scale-100">
+    <div className="absolute top-[calc(100%+0.4rem)] left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-white/95 border border-gray-100 backdrop-blur-md text-gray-700 text-xs font-bold rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl shadow-gray-200/40 z-60 scale-95 group-hover/tooltip:scale-100">
       {text}
-      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 border-4 border-transparent border-b-white/95" />
     </div>
   </div>
 );
@@ -62,14 +61,28 @@ const TooltipBottom = ({ children, text }: { children: React.ReactNode, text: st
 const TooltipLeft = ({ children, text, className }: { children: React.ReactNode, text: string, className?: string }) => (
   <div className={`relative group/tooltip flex ${className || ''}`}>
     {children}
-    <div className="absolute right-[calc(100%+0.5rem)] top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900/95 text-white text-xs font-medium rounded-lg opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl z-50 scale-95 group-hover/tooltip:scale-100">
+    <div className="absolute right-[calc(100%+0.5rem)] top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-white/95 border border-gray-100 backdrop-blur-md text-gray-700 text-xs font-bold rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl shadow-gray-200/40 z-60 scale-95 group-hover/tooltip:scale-100">
       {text}
-      <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 border-4 border-transparent border-l-gray-900/95" />
+      <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 border-4 border-transparent border-l-white/95" />
     </div>
   </div>
 );
 
-export function HeroClient() {
+function createSessionId() {
+  return crypto.randomUUID();
+}
+
+function sortSessions(sessions: Session[]) {
+  return [...sessions].sort((a, b) => {
+    if (a.isPinned !== b.isPinned) {
+      return Number(b.isPinned) - Number(a.isPinned);
+    }
+
+    return b.updatedAt - a.updatedAt;
+  });
+}
+
+export function HeroClient({ initialSessions }: { initialSessions: Session[] }) {
   const [mode, setMode] = useState<Mode>("idea");
   const [category, setCategory] = useState<PracticeCategory>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -79,82 +92,224 @@ export function HeroClient() {
   const [isLocalLoading, setIsLocalLoading] = useState(false);
 
   // History states
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<Session[]>(initialSessions);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(createSessionId);
   const [showHistory, setShowHistory] = useState(false);
+  const [isHistoryReady, setIsHistoryReady] = useState(initialSessions.length > 0);
+  const [currentSessionName, setCurrentSessionName] = useState<string | null>(null);
+  const [currentSessionPinned, setCurrentSessionPinned] = useState(false);
+  const [renamingSessionId, setRenamingSessionId] = useState<string | null>(null);
+  const [renamingValue, setRenamingValue] = useState("");
 
-  // Load sessions from localStorage on mount
   useEffect(() => {
-    setCurrentSessionId(Date.now().toString());
-    const saved = localStorage.getItem("yes-and-sessions");
-    if (saved) {
+    let isMounted = true;
+
+    const loadSessions = async () => {
       try {
-        setSessions(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse sessions", e);
+        const response = await fetch("/api/chat-sessions", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        const data = (await response.json()) as { sessions?: Session[] };
+        if (isMounted && Array.isArray(data.sessions)) {
+          setSessions(sortSessions(data.sessions));
+          setIsHistoryReady(true);
+        }
+      } catch (error) {
+        console.error("Failed to load chat sessions", error);
+        if (isMounted) {
+          setIsHistoryReady(true);
+        }
       }
-    }
+    };
+
+    loadSessions();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  // Save session when messages update
   useEffect(() => {
-    if (currentSessionId && localMessages.some(m => !m.content.includes('[Hidden'))) {
-      setSessions(prev => {
-        const existingIdx = prev.findIndex(s => s.id === currentSessionId);
-        const newSession: Session = {
-          id: currentSessionId,
-          mode,
-          category,
-          messages: localMessages,
-          updatedAt: Date.now()
-        };
-        
-        let newSessions;
-        if (existingIdx >= 0) {
-          newSessions = [...prev];
-          newSessions[existingIdx] = newSession;
-        } else {
-          newSessions = [newSession, ...prev];
-        }
-        localStorage.setItem("yes-and-sessions", JSON.stringify(newSessions));
-        return newSessions;
-      });
+    const hasPersistableMessages = localMessages.some(
+      (message) => !isHiddenSessionMessage(message) && message.content.trim(),
+    );
+
+    if (!currentSessionId || !hasPersistableMessages || !isHistoryReady) {
+      return;
     }
-  }, [localMessages, currentSessionId, mode, category]);
+
+    const updatedSession: Session = {
+      id: currentSessionId,
+      mode,
+      category,
+      messages: localMessages,
+      isPinned: currentSessionPinned,
+      sessionName: currentSessionName,
+      updatedAt: Date.now(),
+    };
+
+    setSessions((prev) => {
+      const withoutCurrent = prev.filter((session) => session.id !== currentSessionId);
+      return sortSessions([updatedSession, ...withoutCurrent]);
+    });
+
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        const response = await fetch("/api/chat-sessions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedSession),
+        });
+
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+      } catch (error) {
+        console.error("Failed to persist chat session", error);
+      }
+    }, 500);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    localMessages,
+    currentSessionId,
+    mode,
+    category,
+    isHistoryReady,
+    currentSessionPinned,
+    currentSessionName,
+  ]);
 
   const startNewSession = (newMode: Mode, newCategory: PracticeCategory = null) => {
     setMode(newMode);
     setCategory(newCategory);
     setLocalMessages([]);
     setMyInput("");
-    setCurrentSessionId(Date.now().toString());
+    setCurrentSessionName(null);
+    setCurrentSessionPinned(false);
+    setCurrentSessionId(createSessionId());
   };
 
   const loadSession = (session: Session) => {
     setMode(session.mode);
     setCategory(session.category);
     setLocalMessages(session.messages);
+    setCurrentSessionName(session.sessionName);
+    setCurrentSessionPinned(session.isPinned);
     setCurrentSessionId(session.id);
     setShowHistory(false);
   };
 
   const deleteSession = (id: string) => {
-    setSessions(prev => {
-       const newS = prev.filter(s => s.id !== id);
-       localStorage.setItem("yes-and-sessions", JSON.stringify(newS));
-       return newS;
+    setSessions(prev => prev.filter(s => s.id !== id));
+
+    void fetch("/api/chat-sessions", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: id }),
+    }).catch((error) => {
+      console.error("Failed to delete chat session", error);
     });
+
     if (currentSessionId === id) {
        startNewSession(mode, null);
     }
   };
 
-  const getSessionPreview = (session: Session) => {
-    const firstRealMsg = session.messages.find(m => m.role === 'user' && !m.content.includes('[Hidden'));
-    if (firstRealMsg) return firstRealMsg.content;
-    const assistantMsg = session.messages.find(m => m.role === 'assistant');
-    if (assistantMsg) return assistantMsg.content;
-    return 'Empty conversation';
+  const patchSession = async (payload: {
+    sessionId: string;
+    isPinned?: boolean;
+    sessionName?: string | null;
+  }) => {
+    const response = await fetch("/api/chat-sessions", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+  };
+
+  const togglePinSession = (session: Session) => {
+    const nextPinned = !session.isPinned;
+
+    setSessions((prev) =>
+      sortSessions(
+        prev.map((item) =>
+          item.id === session.id
+            ? { ...item, isPinned: nextPinned, updatedAt: Date.now() }
+            : item,
+        ),
+      ),
+    );
+
+    if (currentSessionId === session.id) {
+      setCurrentSessionPinned(nextPinned);
+    }
+
+    void patchSession({ sessionId: session.id, isPinned: nextPinned }).catch((error) => {
+      console.error("Failed to update pin state", error);
+      setSessions((prev) =>
+        sortSessions(
+          prev.map((item) =>
+            item.id === session.id ? { ...item, isPinned: session.isPinned } : item,
+          ),
+        ),
+      );
+
+      if (currentSessionId === session.id) {
+        setCurrentSessionPinned(session.isPinned);
+      }
+    });
+  };
+
+  const startRenamingSession = (session: Session) => {
+    setRenamingSessionId(session.id);
+    setRenamingValue(session.sessionName ?? "");
+  };
+
+  const submitRenameSession = (session: Session) => {
+    const nextName = renamingValue.trim() || null;
+    setRenamingSessionId(null);
+    setRenamingValue("");
+
+    setSessions((prev) =>
+      sortSessions(
+        prev.map((item) =>
+          item.id === session.id ? { ...item, sessionName: nextName } : item,
+        ),
+      ),
+    );
+
+    if (currentSessionId === session.id) {
+      setCurrentSessionName(nextName);
+    }
+
+    void patchSession({ sessionId: session.id, sessionName: nextName }).catch((error) => {
+      console.error("Failed to rename session", error);
+      setSessions((prev) =>
+        sortSessions(
+          prev.map((item) =>
+            item.id === session.id ? { ...item, sessionName: session.sessionName } : item,
+          ),
+        ),
+      );
+
+      if (currentSessionId === session.id) {
+        setCurrentSessionName(session.sessionName);
+      }
+    });
+  };
+
+  const cancelRenameSession = () => {
+    setRenamingSessionId(null);
+    setRenamingValue("");
   };
 
   const sendMessage = async (currentMessages: Message[], isInitial = false) => {
@@ -251,12 +406,12 @@ export function HeroClient() {
         role: "user", 
         content: "Please generate the first scenario statement for me in character. Just the statement, nothing else." 
     };
-    setLocalMessages([{ ...initMsg, content: "[Hidden System Command]" }]); 
+    setLocalMessages([{ ...initMsg, content: HIDDEN_SYSTEM_COMMAND }]); 
     sendMessage([initMsg], true);
   };
 
-  const visibleMessages = localMessages.filter(m => !m.content.includes("[Hidden System Command]"));
-  const sortedSessions = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
+  const visibleMessages = localMessages.filter((message) => !isHiddenSessionMessage(message));
+  const sortedSessions = sortSessions(sessions);
 
   return (
     <div className="flex flex-col h-[680px] w-full rounded-[2.5rem] overflow-hidden border border-gray-200/60 bg-white/70 backdrop-blur-3xl shadow-2xl shadow-rose-500/5 relative font-sans">
@@ -482,7 +637,7 @@ export function HeroClient() {
             </div>
             
             {/* List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 scroll-smooth">
+            <div className="flex-1 overflow-y-auto p-4 pt-2 space-y-2.5 scroll-smooth">
                {sortedSessions.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-4 opacity-60">
                      <History className="w-12 h-12" />
@@ -493,28 +648,80 @@ export function HeroClient() {
                      <div 
                         key={session.id} 
                         onClick={() => loadSession(session)} 
-                        className="group p-4 rounded-2xl border border-gray-100 bg-white hover:border-rose-200 hover:shadow-lg hover:shadow-rose-500/5 transition-all cursor-pointer flex flex-col gap-2.5 relative overflow-hidden"
+                        className="group/item p-3.5 rounded-2xl border border-gray-100 bg-white hover:border-rose-200 hover:shadow-lg hover:shadow-rose-500/5 transition-all cursor-pointer flex flex-col gap-2 relative"
                      >
-                        <div className="flex items-center gap-2 text-[13px] font-semibold text-gray-700">
-                           <div className={`p-1.5 rounded-lg ${session.mode === 'idea' ? 'bg-orange-50 text-orange-500' : 'bg-rose-50 text-rose-500'}`}>
-                             {session.mode === 'idea' ? <Lightbulb className="w-3.5 h-3.5"/> : <MessageSquareDiff className="w-3.5 h-3.5" />}
+                        <div className="flex items-center gap-2.5 text-sm font-semibold text-gray-700">
+                           <div className={`p-1.5 rounded-lg shrink-0 ${session.mode === "idea" ? "bg-orange-50 text-orange-500" : "bg-rose-50 text-rose-500"}`}>
+                             {session.mode === 'idea' ? <Lightbulb className="w-4 h-4"/> : <MessageSquareDiff className="w-4 h-4" />}
                            </div>
-                           {session.mode === 'idea' ? 'Idea Inspiration' : categories.find(c => c.id === session.category)?.label || 'Practice'}
-                           <span className="text-[11px] text-gray-400 font-medium ml-auto">
+                           <TooltipBottom text={getSessionDisplayTitle(session)} className="flex-1 min-w-0">
+                             <span className="truncate block pr-2 w-full text-left group-hover/item:text-rose-500 transition-colors">{getSessionDisplayTitle(session)}</span>
+                           </TooltipBottom>
+                           <span className="text-[11px] text-gray-400 font-medium ml-auto shrink-0">
                               {new Date(session.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                            </span>
                         </div>
-                        <p className="text-[13px] text-gray-500 line-clamp-2 pr-6 leading-relaxed">
+                        {renamingSessionId === session.id ? (
+                          <div className="px-1 py-0.5" onClick={(e) => e.stopPropagation()}>
+                            <input
+                              autoFocus
+                              value={renamingValue}
+                              onChange={(e) => setRenamingValue(e.target.value)}
+                              onBlur={() => submitRenameSession(session)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  submitRenameSession(session);
+                                }
+                                if (e.key === "Escape") {
+                                  e.preventDefault();
+                                  cancelRenameSession();
+                                }
+                              }}
+                              placeholder="Rename this session"
+                              className="w-full rounded-xl border border-orange-200 bg-orange-50/30 px-3 py-1.5 text-sm text-gray-700 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100 transition-all"
+                            />
+                          </div>
+                        ) : null}
+                        <p className="text-sm text-gray-500 line-clamp-2 pr-2 leading-relaxed opacity-80 group-hover/item:opacity-100 transition-opacity">
                            {getSessionPreview(session)}
                         </p>
-                        <TooltipLeft text="Delete" className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all">
-                           <button 
-                              onClick={(e) => { e.stopPropagation(); deleteSession(session.id); }} 
-                              className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 bg-white rounded-full shadow-sm"
-                           >
-                              <Trash2 className="w-4 h-4" />
-                           </button>
-                        </TooltipLeft>
+                        <div className="absolute right-2 bottom-2 flex items-center gap-0.5 opacity-0 group-hover/item:opacity-100 transition-all duration-200 bg-white/95 backdrop-blur-sm p-0.5 rounded-xl shadow-sm border border-gray-100/60">
+                           <TooltipLeft text={session.isPinned ? "Unpin" : "Pin"}>
+                             <button
+                               onClick={(e) => {
+                                 e.stopPropagation();
+                                 togglePinSession(session);
+                               }}
+                               className={`p-1.5 rounded-lg bg-transparent transition-all hover:bg-white hover:shadow-sm ${
+                                 session.isPinned
+                                   ? "text-amber-500 hover:text-amber-600"
+                                   : "text-gray-400 hover:text-amber-500"
+                               }`}
+                             >
+                               <Pin className="w-3.5 h-3.5" />
+                             </button>
+                           </TooltipLeft>
+                           <TooltipLeft text="Rename">
+                             <button
+                               onClick={(e) => {
+                                 e.stopPropagation();
+                                 startRenamingSession(session);
+                               }}
+                               className="p-1.5 text-gray-400 hover:text-orange-500 bg-transparent hover:bg-white hover:shadow-sm rounded-lg transition-all"
+                             >
+                               <Pencil className="w-3.5 h-3.5" />
+                             </button>
+                           </TooltipLeft>
+                           <TooltipLeft text="Delete">
+                             <button 
+                                onClick={(e) => { e.stopPropagation(); deleteSession(session.id); }} 
+                                className="p-1.5 text-gray-400 hover:text-red-500 bg-transparent hover:bg-white hover:shadow-sm rounded-lg transition-all"
+                             >
+                                <Trash2 className="w-3.5 h-3.5" />
+                             </button>
+                           </TooltipLeft>
+                        </div>
                      </div>
                   ))
                )}

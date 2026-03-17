@@ -1,8 +1,10 @@
 import { getTranslations } from 'next-intl/server'
 import { HeroClient } from './hero-client'
+import { listChatSessionsForCurrentUser } from '@/lib/chat-session-server'
 
 export async function Hero({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'hero' });
+  const initialSessions = await listChatSessionsForCurrentUser();
 
   return (
     <section className="relative w-full overflow-hidden py-8 md:py-12">
@@ -25,7 +27,7 @@ export async function Hero({ locale }: { locale: string }) {
 
         {/* Centered Chat Component */}
         <div className="w-full max-w-4xl relative z-10">
-          <HeroClient />
+          <HeroClient initialSessions={initialSessions} />
         </div>
       </div>
     </section>
