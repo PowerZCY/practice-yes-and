@@ -38,6 +38,37 @@ const categories = [
   { id: "creative", label: "Improv", icon: Wand2, color: "text-purple-500", bg: "bg-purple-50" },
 ] as const;
 
+
+const TooltipTop = ({ children, text }: { children: React.ReactNode, text: string }) => (
+  <div className="relative group/tooltip flex">
+    {children}
+    <div className="absolute bottom-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-white/95 border border-gray-100 backdrop-blur-md text-gray-600 text-xs font-bold rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl shadow-gray-200/40 z-50 scale-95 group-hover/tooltip:scale-100">
+      {text}
+      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-white/95" />
+    </div>
+  </div>
+);
+
+const TooltipBottom = ({ children, text }: { children: React.ReactNode, text: string }) => (
+  <div className="relative group/tooltip flex">
+    {children}
+    <div className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-white/95 border border-gray-100 backdrop-blur-md text-gray-600 text-xs font-bold rounded-xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl shadow-gray-200/40 z-50 scale-95 group-hover/tooltip:scale-100">
+      {text}
+      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 border-4 border-transparent border-b-white/95" />
+    </div>
+  </div>
+);
+
+const TooltipLeft = ({ children, text, className }: { children: React.ReactNode, text: string, className?: string }) => (
+  <div className={`relative group/tooltip flex ${className || ''}`}>
+    {children}
+    <div className="absolute right-[calc(100%+0.5rem)] top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-gray-900/95 text-white text-xs font-medium rounded-lg opacity-0 group-hover/tooltip:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-xl z-50 scale-95 group-hover/tooltip:scale-100">
+      {text}
+      <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 border-4 border-transparent border-l-gray-900/95" />
+    </div>
+  </div>
+);
+
 export function HeroClient() {
   const [mode, setMode] = useState<Mode>("idea");
   const [category, setCategory] = useState<PracticeCategory>(null);
@@ -202,7 +233,7 @@ export function HeroClient() {
 
   useEffect(() => {
     if (localMessages.length > 0) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }, [localMessages]);
 
@@ -228,7 +259,7 @@ export function HeroClient() {
   const sortedSessions = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt);
 
   return (
-    <div className="flex flex-col h-[600px] w-full rounded-[2.5rem] overflow-hidden border border-gray-200/60 bg-white/70 backdrop-blur-3xl shadow-2xl shadow-rose-500/5 relative font-sans">
+    <div className="flex flex-col h-[680px] w-full rounded-[2.5rem] overflow-hidden border border-gray-200/60 bg-white/70 backdrop-blur-3xl shadow-2xl shadow-rose-500/5 relative font-sans">
       
       {/* Decorative Blur Orbs inside the box */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-rose-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-60 -z-10 animate-blob" />
@@ -264,29 +295,31 @@ export function HeroClient() {
         </div>
 
         <div className="flex items-center gap-1 bg-gray-100/50 p-1 rounded-3xl">
-          <button 
-            onClick={() => startNewSession(mode, mode === "practice" && !category ? null : category)} 
-            className="p-2.5 rounded-[1.2rem] bg-transparent text-gray-500 hover:text-orange-500 hover:bg-white hover:shadow-sm transition-all" 
-            title="New Chat"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-          <button 
-            onClick={() => setShowHistory(true)} 
-            className="p-2.5 rounded-[1.2rem] bg-transparent text-gray-500 hover:text-rose-500 hover:bg-white hover:shadow-sm transition-all" 
-            title="View History"
-          >
-            <History className="w-4 h-4" />
-          </button>
+          <TooltipBottom text="New Chat">
+            <button 
+              onClick={() => startNewSession(mode, mode === "practice" && !category ? null : category)} 
+              className="p-2.5 rounded-[1.2rem] bg-transparent text-gray-500 hover:text-orange-500 hover:bg-white hover:shadow-sm transition-all" 
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </TooltipBottom>
+          <TooltipBottom text="History">
+            <button 
+              onClick={() => setShowHistory(true)} 
+              className="p-2.5 rounded-[1.2rem] bg-transparent text-gray-500 hover:text-rose-500 hover:bg-white hover:shadow-sm transition-all" 
+            >
+              <History className="w-4 h-4" />
+            </button>
+          </TooltipBottom>
         </div>
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth z-10 relative">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth z-10 relative flex flex-col">
         
         {/* Empty State / Welcome for IDEA mode */}
         {visibleMessages.length === 0 && mode === "idea" && (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-in fade-in zoom-in duration-500">
+          <div className="flex flex-col items-center justify-center m-auto text-center space-y-6 animate-in fade-in zoom-in duration-500 py-10">
             <div className="relative">
               <div className="absolute inset-0 bg-orange-200 blur-2xl rounded-full" />
               <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-linear-to-br from-white to-orange-50 border border-orange-100 flex items-center justify-center shadow-lg shadow-orange-500/10">
@@ -305,7 +338,7 @@ export function HeroClient() {
 
         {/* Categories for PRACTICE mode */}
         {visibleMessages.length === 0 && mode === "practice" && !category && (
-          <div className="flex flex-col justify-center h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex flex-col justify-center m-auto animate-in fade-in slide-in-from-bottom-4 duration-500 py-10">
             <div className="flex items-center justify-center gap-2 mb-8">
               <Sparkles className="w-6 h-6 text-rose-400" />
               <h3 className="text-center text-lg font-bold text-gray-800">
@@ -355,11 +388,15 @@ export function HeroClient() {
         ))}
 
         {/* Loading Indicator */}
-        {isLocalLoading && visibleMessages.length > 0 && visibleMessages[visibleMessages.length - 1].role === "user" && (
-           <div className="flex justify-start w-full animate-pulse">
-             <div className="bg-white/90 backdrop-blur-sm rounded-3xl rounded-tl-sm px-6 py-4 border border-gray-100 flex items-center gap-3 shadow-sm">
-               <Loader2 className="w-5 h-5 text-rose-400 animate-spin" />
-               <span className="text-sm text-gray-500 font-medium">Drafting warmth...</span>
+        {isLocalLoading && (
+           <div className="flex justify-start w-full animate-in fade-in slide-in-from-left-2 duration-300">
+             <div className="bg-white/80 backdrop-blur-sm rounded-3xl rounded-tl-sm px-6 py-4 border border-gray-100 flex items-center gap-3 shadow-sm shadow-rose-500/5">
+               <div className="flex gap-1">
+                 <div className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                 <div className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                 <div className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce"></div>
+               </div>
+               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">AI is thinking</span>
              </div>
            </div>
         )}
@@ -374,25 +411,28 @@ export function HeroClient() {
             className="flex items-end gap-2 sm:gap-3 bg-white rounded-3xl p-1.5 sm:p-2 pr-2 sm:pr-3 border border-gray-200 focus-within:border-orange-300 focus-within:ring-4 focus-within:ring-orange-100/50 transition-all shadow-sm"
           >
             {mode === 'practice' && category && (
+               <TooltipTop text="Change Category">
                <button
                  type="button"
                  onClick={() => {
                    startNewSession("practice", null);
                  }}
                  className="p-3 sm:p-4 text-gray-400 hover:text-rose-500 transition-colors rounded-[1.2rem] hover:bg-rose-50 mb-0.5 ml-0.5"
-                 title="Change Category"
                >
                  <RefreshCcw className="w-4 h-4 sm:w-5 sm:h-5" />
                </button>
+             </TooltipTop>
             )}
             <textarea
              className="flex-1 bg-transparent border-none outline-none text-[15px] sm:text-[16px] text-gray-800 px-3 sm:px-4 py-3 sm:py-4 placeholder:text-gray-400 resize-none min-h-[50px] sm:min-h-[56px] max-h-[120px] sm:max-h-[150px]"
              rows={1}
              value={myInput}
              placeholder={
-               mode === "idea"
-                 ? "E.g., My boss wants this done by tonight..."
-                 : "Type your 'Yes, And' response..."
+               isLocalLoading 
+                 ? "AI is responding..." 
+                 : mode === "idea"
+                   ? "E.g., My boss wants this done by tonight..."
+                   : "Type your 'Yes, And' response..."
              }
              onChange={(e) => {
                setMyInput(e.target.value);
@@ -411,9 +451,13 @@ export function HeroClient() {
             <button
              type="submit"
              disabled={isLocalLoading || (!myInput.trim() && !(mode === 'practice' && localMessages.length === 0))}
-             className="p-3 sm:p-4 rounded-[1.2rem] bg-linear-to-br from-orange-400 to-rose-400 text-white hover:shadow-lg hover:shadow-rose-400/40 disabled:opacity-40 disabled:hover:shadow-none transition-all group mb-0.5"
+             className={`p-3 sm:p-4 rounded-[1.2rem] bg-linear-to-br from-orange-400 to-rose-400 text-white hover:shadow-lg hover:shadow-rose-400/40 disabled:opacity-40 disabled:hover:shadow-none transition-all group mb-0.5 ${isLocalLoading ? 'animate-pulse' : ''}`}
             >
-              <Send className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              {isLocalLoading ? (
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              )}
             </button>
           </form>
           <div className="text-center mt-2.5">
@@ -457,19 +501,20 @@ export function HeroClient() {
                            </div>
                            {session.mode === 'idea' ? 'Idea Inspiration' : categories.find(c => c.id === session.category)?.label || 'Practice'}
                            <span className="text-[11px] text-gray-400 font-medium ml-auto">
-                              {new Date(session.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                              {new Date(session.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                            </span>
                         </div>
                         <p className="text-[13px] text-gray-500 line-clamp-2 pr-6 leading-relaxed">
                            {getSessionPreview(session)}
                         </p>
-                        <button 
-                           onClick={(e) => { e.stopPropagation(); deleteSession(session.id); }} 
-                           className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all bg-white rounded-full shadow-sm"
-                           title="Delete Session"
-                        >
-                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        <TooltipLeft text="Delete" className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all">
+                           <button 
+                              onClick={(e) => { e.stopPropagation(); deleteSession(session.id); }} 
+                              className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 bg-white rounded-full shadow-sm"
+                           >
+                              <Trash2 className="w-4 h-4" />
+                           </button>
+                        </TooltipLeft>
                      </div>
                   ))
                )}

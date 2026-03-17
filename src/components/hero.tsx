@@ -24,7 +24,7 @@ export async function Hero({ locale }: { locale: string }) {
         </div>
 
         {/* Centered Chat Component */}
-        <div className="w-full max-w-3xl relative z-10">
+        <div className="w-full max-w-4xl relative z-10">
           <HeroClient />
         </div>
       </div>

@@ -1,6 +1,6 @@
 {
   "home": {
-    "title": "Diaomao",
+    "title": "Practice Yes And",
     "banner": "Ship Faster | Charge Smarter | Scale Fearlessly",
     "webTitle": "Diaomao – The Ultimate AI SaaS Starter Kit with Stripe, Credits & Docs",
     "webDescription": "Next.js 14 + Prisma + PostgreSQL + Stripe + Clerk + Fumadocs. Production-ready pricing tiers, credit system, anonymous-to-auth onboarding, and beautiful docs — everything you need to launch and monetize your AI product in days, not months.",
@@ -384,8 +384,8 @@
   "clerk": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "signUpBonus": "+2",
-    "signUpBonusTooltip": "Sign up and get 2 free credits!"
+    "signUpBonus": "",
+    "signUpBonusTooltip": ""
   },
   "linkPreview": {
     "blog": "Blog",

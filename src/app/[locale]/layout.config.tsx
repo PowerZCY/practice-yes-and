@@ -20,11 +20,11 @@ export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> 
       text: t1('blog'),
       url: getAsNeededLocalizedUrl(locale, '/blog'),
     },
-    {
-      icon: <icons.BTC />,
-      text: t1('pricing'),
-      url: getAsNeededLocalizedUrl(locale, '/pricing'),
-    },
+    // {
+    //   icon: <icons.BTC />,
+    //   text: t1('pricing'),
+    //   url: getAsNeededLocalizedUrl(locale, '/pricing'),
+    // },
     {
       type: 'custom',
       secondary: true,
