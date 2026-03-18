@@ -414,7 +414,7 @@ export function HeroClient({ initialSessions }: { initialSessions: Session[] }) 
   const sortedSessions = sortSessions(sessions);
 
   return (
-    <div className="flex flex-col h-[680px] w-full rounded-[2.5rem] overflow-hidden border border-gray-200/60 bg-white/70 backdrop-blur-3xl shadow-2xl shadow-rose-500/5 relative font-sans">
+    <div className="relative flex h-[680px] w-full max-w-none flex-col overflow-hidden rounded-[2.5rem] border border-gray-200/60 bg-white/70 font-sans shadow-2xl shadow-rose-500/5 backdrop-blur-3xl">
       
       {/* Decorative Blur Orbs inside the box */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-rose-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-60 -z-10 animate-blob" />

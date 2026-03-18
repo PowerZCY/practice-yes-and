@@ -12,7 +12,6 @@ const { Page, generateStaticParams, generateMetadata } = createFumaPage({
   mdxContentSource: blogSource,
   getMDXComponents,
   mdxSourceDir: appConfig.mdxSourceDir[sourceKey],
-  githubBaseUrl: appConfig.githubBaseUrl,
   copyButtonComponent: <LLMCopyButton />,
   siteIcon: <SiteIcon />,
   FallbackPage: NotFoundPage,

@@ -11,7 +11,6 @@ const { Page, generateStaticParams, generateMetadata } = createFumaPage({
   mdxContentSource: legalSource,
   getMDXComponents,
   mdxSourceDir: appConfig.mdxSourceDir[sourceKey],
-  githubBaseUrl: appConfig.githubBaseUrl,
   siteIcon: <SiteIcon />,
   FallbackPage: NotFoundPage,
   supportedLocales: appConfig.i18n.locales as string[],

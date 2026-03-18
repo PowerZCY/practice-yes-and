@@ -1,372 +1,158 @@
 {
   "home": {
     "title": "Practice Yes And",
-    "banner": "Ship Faster | Charge Smarter | Scale Fearlessly",
-    "webTitle": "Diaomao – The Ultimate AI SaaS Starter Kit with Stripe, Credits & Docs",
-    "webDescription": "Next.js 14 + Prisma + PostgreSQL + Stripe + Clerk + Fumadocs. Production-ready pricing tiers, credit system, anonymous-to-auth onboarding, and beautiful docs — everything you need to launch and monetize your AI product in days, not months.",
-    "keywords": "AI SaaS template, Next.js boilerplate, Stripe billing, credit-based pricing, anonymous onboarding, Fumadocs, Prisma PostgreSQL, Clerk authentication"
+    "banner": "Practice Yes And | AI Conversation Practice | Better Responses",
+    "webTitle": "Practice Yes And - AI Yes And Practice and Conversation Practice for Real-Life Scenarios",
+    "webDescription": "Practice Yes And is an AI conversation practice tool for real-life scenarios. Use AI to practice the Yes, And mindset, improve active listening, explore difficult conversation scenarios, and find better ways to respond at work, in relationships, in parenting, and in everyday social life.",
+    "keywords": "practice yes and, yes and practice, ai conversation practice, ai communication practice, conversation practice, yes and exercises, yes and mindset, communication practice, difficult conversation practice, conversation scenarios, active listening practice, better ways to respond, what to say in a difficult conversation"
   },
   "hero": {
-    "mainTitle": "Ship a paid AI product with",
-    "mainEyesOn": "Diaomao",
-    "description": "Pricing that upgrades itself. Credits that never leak. Docs that stay in sync. Stripe flows that just work. Diaomao is the full-stack chassis trusted by makers who refuse to waste another weekend on billing infrastructure.",
-    "button": "Get Diaomao →",
-    "about": "SSR-first • Mobile-perfected • Fingerprint → Clerk seamless onboarding",
-    "heroImageAlt": "Diaomao – Modern pricing, credit dashboard and documentation system",
+    "mainTitle": "AI-Powered",
+    "mainEyesOn": "Practice Yes And",
+    "description": "Practice Yes And is an AI tool for yes and practice. Bring a real situation, get better response ideas, and practice difficult conversations for work, relationships, parenting, and social life.",
+    "button": "Start Practicing →",
+    "about": "AI conversation practice • Difficult scenarios • Better responses",
+    "heroImageAlt": "Practice Yes And AI conversation practice for difficult real-life scenarios",
     "heroImageUrl": "https://r2.d8ger.com/default.webp"
   },
   "usage": {
-    "title": "From zero to paid users",
-    "eyesOn": "in 3 stupidly simple steps",
-    "description": "Everything is pre-wired. You just turn the knobs.",
+    "title": "Practice yes and better",
+    "eyesOn": "in 3 simple steps",
+    "description": "Use the AI homepage tool to turn a real conversation into guided yes and practice.",
     "steps": [
       {
-        "title": "Connect your stack",
-        "description": "Drop in Stripe, PostgreSQL, and Clerk keys. Your pricing page and credit system instantly become user-aware on day one.",
+        "title": "Bring in a real situation",
+        "description": "Describe what someone said, what happened, and the kind of response you want to practice. You can also choose a scenario category like work, relationships, parenting, social life, or improv-style practice yes and training.",
         "iconKey": "Zap"
       },
       {
-        "title": "Tune your config",
-        "description": "Switch between monthly, yearly, and one-time credit packs with a single config flag. Upgrade paths, discounts, and CTAs auto-adapt to each user.",
+        "title": "Get AI yes and practice",
+        "description": "The AI generates warmer, more constructive ways to respond using the Yes, And mindset. This gives you practice yes and examples, conversation practice prompts, and better response options without shutting the conversation down.",
         "iconKey": "Settings"
       },
       {
-        "title": "Launch your story",
-        "description": "Beautiful docs, mega-menu navigation, and gradient-rich marketing pages — all driven by the same MDX files. Ship updates without touching CSS.",
+        "title": "Keep practicing and refining",
+        "description": "Ask follow-up questions, try multiple versions, and keep practicing until the response feels natural. Practice Yes And works best when you compare options, repeat the scenario, and refine how you want to show up in the real conversation.",
         "iconKey": "Rocket"
       }
     ]
   },
   "faq": {
-    "title": "Got questions?",
-    "description": "We’ve got answers.",
+    "title": "Questions about Yes, And practice?",
+    "description": "Start here.",
     "items": [
       {
-        "question": "What exactly is Diaomao?",
-        "answer": "The fastest way to launch a production-ready, monetized AI product. Next.js 14 + Prisma + PostgreSQL + Stripe + Clerk + beautiful docs — everything pre-built and battle-tested."
+        "question": "What is the Yes, And mindset?",
+        "answer": "Yes, And is a communication approach borrowed from improv. Instead of resisting or shutting down what someone says, you acknowledge it and build on it. In real life, that often leads to warmer, more collaborative responses. Practice Yes And turns that mindset into repeatable AI-guided practice yes and exercises you can use in daily life."
       },
       {
-        "question": "Can I sell both subscriptions AND one-time credit packs?",
-        "answer": "Absolutely. Toggle between monthly, yearly, and one-time purchases with a single config change. Upgrade buttons automatically route to Stripe Checkout or Customer Portal."
+        "question": "What can I practice on Practice Yes And?",
+        "answer": "You can practice conversation scenarios across workplace communication, relationships, parenting, social situations, and improvisational thinking. The homepage tool helps you generate ideas, rehearse better responses, and use AI to practice yes and communication in realistic situations."
       },
       {
-        "question": "What happens to anonymous users?",
-        "answer": "They get a fingerprint ID and starter credits instantly. When they eventually sign in, their balance and history merge seamlessly — zero data loss, zero flicker."
+        "question": "Is this for difficult conversations?",
+        "answer": "Yes. Practice Yes And is designed for difficult conversation practice, especially moments where you want to respond with more empathy, curiosity, calm, or creativity. It is useful when you are asking yourself what to say, how to say it, or how to avoid making tension worse."
       },
       {
-        "question": "How hard is it to customize navigation & docs?",
-        "answer": "Dead easy. Mega-menu, mobile pinning, and docs are all driven by simple JSON/MDX config. Change once, updates everywhere."
+        "question": "How is this different from reading communication advice?",
+        "answer": "Advice explains what to do. Practice helps you actually do it. Practice Yes And turns communication advice into AI conversation practice by giving you situations, prompts, and response ideas you can work through again and again until the language feels usable."
       },
       {
-        "question": "Is the entire Stripe lifecycle handled?",
-        "answer": "Yes. Checkout, Portal, webhooks, renewals, dunning, refunds, upgrades/downgrades — all idempotent and logged. You’ll never lose a payment event again."
+        "question": "Who is Practice Yes And for?",
+        "answer": "It is for anyone who wants better conversations: people navigating work tension, relationship friction, parenting moments, awkward social exchanges, or creative collaboration. If you want AI help to practice yes and responses before the real moment, this tool is for you."
       }
     ]
   },
-
-  "moneyPrice": {
-    "title": "Choose Your Plan",
-    "subtitle": "Select the best option for your needs",
-    "billingSwitch": {
-      "options": [
-        {
-          "key": "monthly",
-          "name": "Monthly",
-          "unit": "/month",
-          "discountText": "",
-          "subTitle": "Billed Monthly"
-        },
-        {
-          "key": "yearly",
-          "name": "Yearly",
-          "unit": "/month",
-          "discountText": "Save {percent}%",
-          "subTitle": "Billed Annually"
-        },
-        {
-          "key": "onetime",
-          "name": "One-Time",
-          "unit": "Credit Pack",
-          "discountText": "Credit Pack",
-          "subTitle": "Pay Once"
-        }
-      ],
-      "defaultKey": "yearly"
-    },
-    "subscription": {
-      "plans": [
-        {
-          "key": "F1",
-          "title": "Hobby",
-          "showBillingSubTitle": false,
-          "features": [
-            { "description": "Basic features" },
-            { "description": "Community support" },
-            { "description": "Limited usage" },
-            { "description": "No credit card required" }
-          ]
-        },
-        {
-          "key": "P2",
-          "title": "Pro",
-          "showBillingSubTitle": true,
-          "features": [
-            {
-              "description": "All Free features",
-              "tag": "Hobby"
-            },
-            { "description": "Priority support" },
-            {
-              "description": "50 credits/month",
-              "tooltip": "1 credit = 1 AI generation"
-            },
-            { "description": "Advanced analytics" }
-          ]
-        },
-        {
-          "key": "U3",
-          "title": "Ultra",
-          "showBillingSubTitle": true,
-          "titleTags": ["Most Popular"],
-          "features": [
-            {
-              "description": "All Pro features",
-              "tag": "Pro"
-            },
-            {
-              "description": "200 credits/month",
-              "tooltip": "1 credit = 1 AI generation"
-            },
-            { "description": "Early access to new features" },
-            {
-              "description": "Dedicated support",
-              "tooltip": "24/7 priority support with dedicated account manager"
-            },
-            { "description": "Custom integrations" }
-          ]
-        }
-      ]
-    },
-    "credits": {
-      "plans": [
-        {
-          "key": "F1",
-          "title": "Starter",
-          "subtitle": "25 Credits",
-          "showBillingSubTitle": true,
-          "features": [
-            { "description": "525AI generations" },
-            { "description": "Perfect for trying out" },
-            { "description": "No expiration" },
-            { "description": "Instant activation" }
-          ]
-        },
-        {
-          "key": "P2",
-          "title": "Popular",
-          "subtitle": "150 Credits",
-          "showBillingSubTitle": true,
-          "titleTags": ["Preferred"],
-          "features": [
-            { "description": "150 AI generations" },
-            { "description": "Great for regular use" },
-            { "description": "No expiration" },
-            { "description": "Instant activation" },
-            { "description": "Support batch processing" }
-          ]
-        },
-        {
-          "key": "U3",
-          "title": "Power",
-          "subtitle": "350 Credits",
-          "showBillingSubTitle": true,
-          "features": [
-            { "description": "350 AI generations" },
-            { "description": "Perfect for heavy users" },
-            { "description": "No expiration" },
-            { "description": "Instant activation" }
-          ]
-        }
-      ]
-    },
-    "buttonTexts": {
-      "buyCredits": "Buy Credits",
-      "getStarted": "Get Started",
-      "getPro": "Get Pro",
-      "getUltra": "Get Ultra",
-      "currentPlan": "Current Plan",
-      "upgrade": "Upgrade"
-    }
-  },
-  "credit": {
-    "summary": {
-      "description": "Sum of all available credits",
-      "totalLabel": "Total Credits"
-    },
-    "buckets": {
-      "title": "Credit Breakdown",
-      "empty": "No credits yet",
-      "expiredAtLabel": "Expires",
-      "expandDetail": "Click to show credit details",
-      "hiddenDetail": "Click to hide credit details",
-      "labels": {
-        "free": "Free",
-        "subscription": "Subscription",
-        "onetime": "One-Time"
-      }
-    },
-    "subscription": {
-      "periodLabel": "Current Plan",
-      "manage": "Manage Subscription",
-      "inactive": "Free",
-      "pay": "Subscribe Now"
-    },
-    "onetime": {
-      "buy": "Buy One-Time Credits Pack"
-    }
-  },
+  
   "features": {
-    "title": "Everything you keep rebuilding",
-    "eyesOn": "Diaomao already solved",
-    "description": "Stop gluing together half-baked solutions. This is the template that ends the weekend billing nightmares.",
+    "title": "Everything you need for",
+    "eyesOn": "AI conversation practice",
+    "description": "The homepage combines AI idea generation and scenario practice so you can improve how you respond in real situations and get more value from practice yes and sessions.",
     "items": [
       {
-        "title": "Money Price 2.0",
-        "description": "Monthly / Yearly / One-time toggle that instantly reflects the user’s current plan. Discount badges, upgrade guards, and SSR defaults — all automatic.",
+        "title": "AI-powered yes and response ideas",
+        "description": "Type in a tricky moment and get multiple warmer, more constructive response options built around the Yes, And mindset. This is the fastest way to start practice yes and with language you can actually use.",
         "iconKey": "Sparkles"
       },
       {
-        "title": "Credit System",
-        "description": "Buckets, expiration tags, and smart CTAs. Desktop = modals. Mobile = redirects. Zero confusion, maximum upsells.",
+        "title": "AI difficult conversation practice",
+        "description": "Work through realistic conversation scenarios instead of staying stuck in theory. Practice how to respond before the moment actually happens, and use AI to test different levels of warmth, clarity, and curiosity.",
         "iconKey": "Gift"
       },
       {
-        "title": "Auth and Anonymous",
-        "description": "Fingerprint on first visit → starter credits → seamless merge on sign-in. No flicker, no balance loss, no support tickets.",
+        "title": "Real-life scenario categories",
+        "description": "Practice yes and communication for work, relationships, parenting, social life, and improv-style thinking in one place. The category flow makes practice yes and easier to apply to the specific kind of conversation you are facing.",
         "iconKey": "Fingerprint"
       },
       {
-        "title": "Docs & Navigation",
-        "description": "Fumadocs + mega-menu header. One source of truth for marketing and documentation. Mobile pinning, dark mode, and accessibility included.",
+        "title": "Active listening and better responses",
+        "description": "Build habits that support more open, collaborative conversations, including active listening, emotional regulation, and response flexibility. Practice Yes And is designed to help better responses feel trainable, not vague.",
         "iconKey": "BookOpen"
       }
     ]
   },
-  "gallery": {
-    "titleL": "Gallery of",
-    "eyesOn": "Diaomao",
-    "titleR": "Creations",
-    "description": "Swipe through the built-in UI language: gradient CTAs, pill billing toggles, credit buckets, and docs hero visuals.",
-    "button": {
-      "title": "Preview the template",
-      "href": "https://newspaper-template.org/",
-      "align": "center"
-    },
-    "defaultImgUrl": "https://r2.d8ger.com/default.webp",
-    "downloadPrefix": "diaomao",
-    "prompts": [
-      {
-        "url": "https://r2.d8ger.com/Reve-Image/1.webp",
-        "altMsg": "Pricing grid with Money Price gradients and discount badges"
-      },
-      {
-        "url": "https://r2.d8ger.com/Reve-Image/2.webp",
-        "altMsg": "Credit Overview dropdown showing buckets and CTA buttons"
-      },
-      {
-        "url": "https://r2.d8ger.com/Reve-Image/3.webp",
-        "altMsg": "Fumadocs hero with banner, cards, and responsive layout"
-      },
-      {
-        "url": "https://r2.d8ger.com/Reve-Image/4.webp",
-        "altMsg": "Header mega menu with pinned mobile actions and secondary buttons"
-      },
-      {
-        "url": "https://r2.d8ger.com/Reve-Image/5.webp",
-        "altMsg": "Fingerprint status panel summarizing anonymous onboarding"
-      },
-      {
-        "url": "https://r2.d8ger.com/Reve-Image/6.webp",
-        "altMsg": "Stripe lifecycle blueprint for subscriptions and one-time payments"
-      }
-    ]
-  },
   "tips": {
-    "title": "Tips for Getting the Best Results with",
-    "eyesOn": "Diaomao",
+    "title": "Tips for Getting Better Results with",
+    "eyesOn": "Practice Yes And",
     "sections": [
       {
-        "title": "Configure before coding",
-        "description": "Pricing, credits, navigation, and CTAs are config-driven—tune parameters before touching code."
+        "title": "Use real situations",
+        "description": "Paste in something someone actually said, or describe the real tension you are trying to handle. Practice yes and becomes much more useful when the situation is concrete."
       },
       {
-        "title": "Keep billing options",
-        "description": "Even if you default to onetime, leave monthly/yearly available to avoid dead ends."
+        "title": "Focus on the response",
+        "description": "The goal is not to win the exchange. The goal is to practice better responses that keep the conversation open and constructive. The strongest practice yes and sessions improve tone as well as wording."
       },
       {
-        "title": "Honor device behaviors",
-        "description": "Mobile uses redirects/auth then closes; desktop can modal—follow the design guide."
+        "title": "Try multiple versions",
+        "description": "Compare a direct response, a warmer response, and a more curious response so you can feel the difference. AI is most helpful when you let it generate multiple versions for the same moment."
       },
       {
-        "title": "Prefer SSR context",
-        "description": "Use InitUserContext to prehydrate user state—no first-screen jitter, billing defaults match reality."
+        "title": "Practice across contexts",
+        "description": "Use workplace, relationship, parenting, and social scenarios to see how the Yes, And mindset changes with context. Practice Yes And should feel different in each setting because real communication is contextual."
       },
       {
-        "title": "Follow the schema",
-        "description": "Stick to Users/Subscriptions/Transactions/Credits; order_id + event.id keep webhooks idempotent."
+        "title": "Look for active listening moments",
+        "description": "Strong responses often start by acknowledging emotion, clarifying intent, or building gently on what the other person said. This is one reason practice yes and overlaps naturally with active listening practice."
       },
       {
-        "title": "Tell the story in docs",
-        "description": "Use Fumadocs cards and banners to ship product narrative and releases without extra styling."
+        "title": "Repeat before the real moment",
+        "description": "If a conversation matters, practice it more than once. Repetition helps good responses become easier under pressure, and repeated practice yes and sessions make the mindset easier to access in real time."
       }
     ]
   },
   "seoContent": {
-    "title": "The AI-era product chassis with",
-    "eyesOn": "Diaomao",
-    "description": "Pricing, credits, docs, navigation, and Stripe orchestrated as one.",
-    "intro": "Diaomao compresses the slowest parts of shipping AI products into one template: Money Price runs subscription/onetime in parallel, Credit Overview governs buckets and CTA matrix, fingerprint-to-Clerk prevents funnel gaps, Stripe lifecycle and schema are pre-aligned, and Fumadocs + Header keep story and navigation consistent.",
+    "title": "Why use",
+    "eyesOn": "Practice Yes And",
+    "description": "AI conversation practice for better responses, active listening, and difficult conversations.",
+    "intro": "Practice Yes And helps users turn abstract communication advice into active AI conversation practice. Instead of only reading about empathy, active listening, or difficult conversations, users can describe a real situation, explore better responses, and practice realistic conversation scenarios across work, relationships, parenting, and social life. Practice Yes And is built for people who want more than inspiration. They want practice. They want language. They want a repeatable way to work through hard moments. That is the core value of practice yes and: giving people a place to rehearse better communication before it matters most.",
     "sections": [
       {
-        "title": "Pricing that adapts to user state",
-        "content": "Billing pills switch monthly|yearly|onetime; SSR defaults to the user’s plan, and upgrade buttons honor enableSubscriptionUpgrade with Portal fallback."
+        "title": "Practice yes and for real-life communication",
+        "content": "The Yes, And mindset is not just an improv exercise. It can help people respond with more openness, flexibility, and collaboration in everyday conversations. Practice Yes And takes that idea out of the workshop and puts it into an AI tool designed for everyday use. Whether the issue is tension at work, friction in a relationship, stress with a child, or uncertainty in a social situation, practice yes and gives users a concrete way to try language, compare options, and build a more constructive response style."
       },
       {
-        "title": "Credits with clear buckets and CTA matrix",
-        "content": "Buckets, expiry hints, and device-aware actions: desktop modals or auth-to-Portal, mobile redirects or custom handlers."
+        "title": "AI conversation practice instead of passive advice",
+        "content": "Users do not just read communication tips. They can work through tricky moments, test multiple responses, and rehearse how they want to show up in a real exchange. AI matters here because it makes practice faster, more responsive, and easier to repeat. A user can bring in one line from a real conversation, ask for a warmer version, ask for a calmer version, ask for a more direct version, and continue refining. Practice Yes And turns static advice into living AI conversation practice that supports real iteration."
       },
       {
-        "title": "Anonymous-first onboarding",
-        "content": "Fingerprint issues `fp_xxx`, grants starter credits, and writes records; after login the same context continues with balances and audit intact."
+        "title": "Difficult conversation practice across contexts",
+        "content": "The site supports conversation scenarios for workplace communication, relationship tension, parenting moments, social awkwardness, and collaborative creativity. This matters for SEO and for usability because people rarely search for help in abstract language. They search for concrete situations. They search for what to say to a coworker, how to respond in a relationship argument, how to talk to a child without escalating, or how to keep a conversation going. Practice Yes And can support those contexts while still keeping practice yes and as the central topic and brand phrase."
       },
       {
-        "title": "Stripe lifecycle baked in",
-        "content": "Checkout|Portal, async confirmation, renewal, past-due, refund, end-of-period cancel, upgrade|downgrade—all guarded by order_id metadata and webhook idempotency."
+        "title": "A better way to practice active listening",
+        "content": "Many hard conversations improve when people feel heard. Practicing responses that acknowledge, clarify, and build helps reinforce active listening in a usable way. Practice Yes And is especially strong when a user wants to sound less defensive, less abrupt, or less reactive. In those moments, practice yes and can surface language that keeps the conversation moving while still protecting honesty and boundaries. That makes the tool useful not only for yes and practice as a concept, but also for active listening practice and communication practice as a broader behavior."
       },
       {
-        "title": "Navigation and docs that scale",
-        "content": "Header mega menu, pinned behaviors, and actionOrders keep Docs|pricing|auth buttons in place; Fumadocs cards and banners ship with no extra styling."
+        "title": "Useful for people who ask what to say",
+        "content": "A common search intent is simple: what should I say here? The homepage tool helps users generate better ways to respond without escalating or shutting conversations down. That makes Practice Yes And relevant to queries like what to say in a difficult conversation, better ways to respond, conversation practice, communication practice, and difficult conversation practice. The page should sound natural to people and still be clear to search engines that practice yes and is the main offering, while AI conversation practice is the main mechanism."
       },
       {
-        "title": "Schema-first reliability",
-        "content": "Users, Subscriptions, Credits, Transactions, CreditAuditLog indexed for fingerprint lookup, order routing, and audit stability."
+        "title": "Built around practice, not perfection",
+        "content": "The goal is not to find one perfect line. The goal is to build communication range through repeated practice, stronger listening, and more constructive response habits. Practice Yes And should feel like a place where users can return often, not a page they read once and leave. Every new conversation creates another chance to practice yes and, test another response, learn another pattern, and use AI as a practical communication coach. That repeated use pattern is part of what makes Practice Yes And a strong homepage concept and a strong long-term SEO target."
       }
     ],
-    "conclusion": "Plug in keys, tune config, fill copy—launch an AI-ready, revenue-ready, story-ready site in a week."
-  },
-  "cta": {
-    "title": "Start shipping your AI idea with",
-    "eyesOn": "Diaomao",
-    "description1": "One template. Every hard part solved.",
-    "description2": "Stripe, credits, auth— all production-ready out of the box.",
-    "button": "Get Diaomao Now →",
-    "url": "https://newspaper-template.org/"
-  },
-  "languageDetection": {
-    "title": "Language Detection",
-    "description": "Would you like to switch to",
-    "close": "No, thanks",
-    "changeAction": "Yes, switch"
+    "conclusion": "If you want to improve how you respond in hard conversations, Practice Yes And gives you a simple way to practice the mindset, the language, and the scenarios that matter most. The page should keep reinforcing three ideas in a natural way: Practice Yes And is the product, practice yes and is the core action, and AI conversation practice is the engine that helps users do it more effectively."
   },
   "footer": {
     "company": "WindRun · Huaiin",

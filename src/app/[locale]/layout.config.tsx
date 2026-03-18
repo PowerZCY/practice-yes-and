@@ -1,7 +1,7 @@
 import { i18n } from '@/i18n';
 import { appConfig } from '@/lib/appConfig';
 import { SiteIcon } from '@/lib/site-config';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+// import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
 import { ClerkUser } from '@windrun-huaiin/third-ui/clerk/server';
 import { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { getTranslations } from 'next-intl/server';
@@ -12,14 +12,14 @@ import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
 
 // home page normal menu
 export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> {
-  const t1 = await getTranslations({ locale: locale, namespace: 'linkPreview' });
+  // const t1 = await getTranslations({ locale: locale, namespace: 'linkPreview' });
   const { userId } = await getOptionalAuth();
   return [
-    {
-      icon: <icons.BugOff />,
-      text: t1('blog'),
-      url: getAsNeededLocalizedUrl(locale, '/blog'),
-    },
+    // {
+    //   icon: <icons.BugOff />,
+    //   text: t1('blog'),
+    //   url: getAsNeededLocalizedUrl(locale, '/blog'),
+    // },
     // {
     //   icon: <icons.BTC />,
     //   text: t1('pricing'),
