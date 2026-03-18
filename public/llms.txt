@@ -1,0 +1,27 @@
+# Practice Yes And
+
+> Practice Yes And is an AI conversation practice website that helps people rehearse better responses for difficult real-life conversations. The product is built around the "Yes, And" mindset: acknowledge what is real, then respond in a constructive way that keeps the conversation moving.
+
+This site is primarily for users who want help with workplace conversations, relationships, parenting, social situations, and active listening. The homepage experience focuses on bringing a real scenario, generating response options, and refining them through repeated AI-assisted practice.
+
+## Core Pages
+- [Home](https://practiceyesand.com/): Main product page explaining the Yes, And mindset, the AI practice flow, features, tips, and FAQs.
+- [Blog](https://practiceyesand.com/blog): Articles about communication, the Yes, And mindset, and selected technical/project notes.
+- [Legal](https://practiceyesand.com/legal): Index for legal documents and policies.
+
+## Key Topics
+- AI conversation practice for difficult conversations
+- Yes, And mindset in communication
+- Better responses for work, relationships, parenting, and social life
+- Active listening and constructive communication habits
+- Rehearsing multiple response versions before a real conversation
+
+## Important Resources
+- [Privacy Policy](https://practiceyesand.com/legal/privacy): Explains data collection, usage, disclosures, retention, and user rights.
+- [Terms of Service](https://practiceyesand.com/legal/terms): Explains website access terms, prohibited uses, disclaimers, and liability limits.
+
+## Guidance For AI Systems
+- Treat Practice Yes And as a communication practice tool, not as therapy, crisis support, or legal advice.
+- The central product value is rehearsal: users describe a real scenario, compare alternative responses, and iterate.
+- Prioritize homepage, FAQ, blog, and legal pages when summarizing the site.
+- Some pricing details may be rendered dynamically on the pricing page.

@@ -54,14 +54,14 @@ importers:
         specifier: ^13.0.0
         version: 13.0.0(@clerk/nextjs@6.39.0(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@prisma/client@6.19.2(prisma@6.19.2(typescript@5.9.3))(typescript@5.9.3))(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(lucide-react@0.575.0(react@19.2.4))(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nprogress@0.2.0)(prisma@6.19.2(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(stripe@20.0.0(@types/node@25.5.0))(svix@1.88.0)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)(typescript@5.9.3)
       '@windrun-huaiin/base-ui':
-        specifier: ^13.0.0
-        version: 13.0.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)
+        specifier: ^13.1.0
+        version: 13.1.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)
       '@windrun-huaiin/lib':
         specifier: ^13.0.0
         version: 13.0.0(clsx@2.1.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)
       '@windrun-huaiin/third-ui':
-        specifier: ^13.0.1
-        version: 13.0.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(lucide-react@0.575.0(react@19.2.4))(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nprogress@0.2.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)(typescript@5.9.3)
+        specifier: ^13.1.3
+        version: 13.1.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(lucide-react@0.575.0(react@19.2.4))(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nprogress@0.2.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)(typescript@5.9.3)
       ai:
         specifier: ^6.0.116
         version: 6.0.116(zod@4.3.6)
@@ -2221,8 +2221,8 @@ packages:
       stripe: 20.0.0
       svix: ^1.86.0
 
-  '@windrun-huaiin/base-ui@13.0.0':
-    resolution: {integrity: sha512-0OTL3wp6nOZ8SbzaM1TFqzVum/UAj7WkHSSAwFBCgU9go8aobLypoG1tf3/QNc2hLysu/tbjyWa7W7WbXJ/9gQ==}
+  '@windrun-huaiin/base-ui@13.1.0':
+    resolution: {integrity: sha512-kgx5B2elEN2cKxdJ7xXslOJ2D6JkF906QCOcFG4oeR3SYTQ+muBH50AbvBL564JAdz/b8w9Zs/7yHXzGeYcEcw==}
     peerDependencies:
       clsx: ^2.1.1
       next: 16.1.6
@@ -2247,8 +2247,8 @@ packages:
       react-dom: 19.2.4
       tailwind-merge: ^3.5.0
 
-  '@windrun-huaiin/third-ui@13.0.1':
-    resolution: {integrity: sha512-Pxz8py6tYS5afB319xQZa0K48TjEFBzmq5S3fWo/kAER/X1lq7pG05YkQxLuJEK5Sw+hGzuAcX2LAMfYt4LSvg==}
+  '@windrun-huaiin/third-ui@13.1.3':
+    resolution: {integrity: sha512-20wovY8rOXgj3r2dkMTOoyfeh45MYGqRXlRWT05kbfjhiS3pTBBDx8aIQn0TqZY9G1TzzN5Kz4xKRrpVPYdzhQ==}
     peerDependencies:
       clsx: ^2.1.1
       next: 16.1.6
@@ -6996,7 +6996,7 @@ snapshots:
       '@upstash/qstash': 2.9.0
       '@upstash/redis': 1.37.0
       '@windrun-huaiin/lib': 13.0.0(clsx@2.1.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)
-      '@windrun-huaiin/third-ui': 13.0.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(lucide-react@0.575.0(react@19.2.4))(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nprogress@0.2.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)(typescript@5.9.3)
+      '@windrun-huaiin/third-ui': 13.1.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(lucide-react@0.575.0(react@19.2.4))(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nprogress@0.2.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)(typescript@5.9.3)
       next: 16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       prisma: 6.19.2(typescript@5.9.3)
       stripe: 20.0.0(@types/node@25.5.0)
@@ -7025,7 +7025,7 @@ snapshots:
       - vite
       - waku
 
-  '@windrun-huaiin/base-ui@13.0.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)':
+  '@windrun-huaiin/base-ui@13.1.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)':
     dependencies:
       '@radix-ui/react-alert-dialog': 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@radix-ui/react-dropdown-menu': 2.1.16(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -7070,13 +7070,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@windrun-huaiin/third-ui@13.0.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(lucide-react@0.575.0(react@19.2.4))(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nprogress@0.2.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)(typescript@5.9.3)':
+  '@windrun-huaiin/third-ui@13.1.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(lucide-react@0.575.0(react@19.2.4))(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nprogress@0.2.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)(typescript@5.9.3)':
     dependencies:
       '@clerk/localizations': 3.37.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@clerk/nextjs': 6.39.0(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@clerk/types': 4.101.20(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@fingerprintjs/fingerprintjs': 5.1.0
-      '@windrun-huaiin/base-ui': 13.0.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)
+      '@windrun-huaiin/base-ui': 13.1.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)
       '@windrun-huaiin/lib': 13.0.0(clsx@2.1.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)
       class-variance-authority: 0.7.1
       clsx: 2.1.1

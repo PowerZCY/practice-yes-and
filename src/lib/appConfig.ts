@@ -2,7 +2,7 @@ import { createCommonAppConfig, createI18nHelpers, LOCALE_PRESETS } from "@windr
 
 // create app config
 export const appConfig = {
-  ...createCommonAppConfig(LOCALE_PRESETS.EN_ZH),
+  ...createCommonAppConfig(LOCALE_PRESETS.EN_ONLY),
   openrouterAI: {
     appName: process.env.NEXT_PUBLIC_APP_NAME || 'Practice Yes And',
     timeoutSeconds: Number(process.env.OPENROUTER_TIMEOUT_SECONDS) || 30,

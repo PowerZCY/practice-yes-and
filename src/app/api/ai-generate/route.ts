@@ -79,7 +79,11 @@ For each option:
 2. Explain the "And" (How are you expanding on it, redirecting it, or offering a solution?).
 3. Give the exact dialogue they can say.
 
-Keep your tone encouraging, empathetic, and insightful. Do NOT use markdown tables. Use clear paragraphs.`;
+Keep your tone encouraging, empathetic, and insightful.
+Output plain text only.
+Do not use Markdown, rich text markers, headings, bullet points, numbered lists, asterisks, or bold markers.
+Use only normal sentences, line breaks, and blank lines to separate sections.
+Use clear paragraphs.`;
 
   } else if (context.startsWith('practice-')) {
     const category = context.replace('practice-', '');
@@ -108,6 +112,11 @@ Keep your tone encouraging, empathetic, and insightful. Do NOT use markdown tabl
     systemPrompt = `You are an interactive "Yes, And" communication coach and roleplayer.
 Current Scenario Category: ${category.toUpperCase()}. 
 Your Role: ${scenarioContext}
+
+OUTPUT FORMAT:
+Return plain text only.
+Do not use Markdown, rich text markers, headings, bullet points, numbered lists, asterisks, or bold markers.
+Use only normal sentences, line breaks, and blank lines to separate sections.
 
 GAME RULES:
 If the conversation just started (or you are prompted to give the first message):

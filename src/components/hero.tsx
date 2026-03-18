@@ -7,7 +7,7 @@ export async function Hero({ locale }: { locale: string }) {
   const initialSessions = await listChatSessionsForCurrentUser();
 
   return (
-    <section className="relative w-full overflow-hidden pt-12 pb-8 md:pt-16 md:pb-12">
+    <section className="relative w-full overflow-hidden mt-8 pt-12 pb-8 md:pt-16 md:pb-12">
       {/* Background warm ambient light */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-linear-to-b from-rose-400/20 via-orange-300/10 to-transparent blur-[120px] pointer-events-none -z-10 animate-pulse duration-3000" />
       

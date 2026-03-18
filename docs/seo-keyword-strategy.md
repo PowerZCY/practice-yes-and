@@ -294,3 +294,28 @@ The strategy is:
 - route long-tail traffic back to the homepage tool
 
 This document should be treated as the working keyword foundation for future title, description, hero copy, FAQ, and blog planning updates.
+
+## Blog Writing Status
+
+### Published
+
+- `What Is the Yes and Mindset in Communication?`
+  - file: `src/mdx/blog/what-is-the-yes-and-mindset-in-communication.mdx`
+  - primary keyword focus: `yes and mindset`
+  - secondary keyword focus: `what is yes and`, `yes and communication`
+  - status: drafted and added to blog index on 2026-03-18
+  - CTA direction: route readers back to the homepage AI conversation practice tool and explain the advantage of practicing difficult responses with AI roleplay
+
+- `How to Use Yes and in Difficult Conversations`
+  - file: `src/mdx/blog/how-to-use-yes-and-in-difficult-conversations.mdx`
+  - primary keyword focus: `yes and in difficult conversations`
+  - secondary keyword focus: `difficult conversation practice`, `how to respond better in a difficult conversation`
+  - status: drafted and added to blog index on 2026-03-18
+  - CTA direction: route readers back to the homepage AI conversation practice tool and explain the value of using AI roleplay to rehearse tense conversations
+
+### Next In Queue
+
+- `25 Workplace Conversation Scenarios to Practice`
+- `Communication Exercises for Couples That Improve Listening`
+- `Yes and Parenting: How to Respond Without Escalating`
+- `Active Listening Exercises for Real-Life Conversations`
