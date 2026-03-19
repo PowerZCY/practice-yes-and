@@ -333,36 +333,26 @@ export function HeroClient({ initialSessions }: { initialSessions: Session[] }) 
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let done = false;
       let assistantMessage = "";
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
         if (value) {
-          const chunk = decoder.decode(value, { stream: true });
-          
-          const lines = chunk.split('\n');
-          for (const line of lines) {
-             if (line.startsWith('0:')) {
-                 try {
-                    const textChunk = JSON.parse(line.slice(2));
-                    assistantMessage += textChunk;
-                 } catch (e) {
-                  console.error(e);
-                 }
-             } else if (!line.startsWith('d:') && !line.startsWith('e:') && line.trim() !== '') {
-                 if (!line.includes(':')) {
-                    assistantMessage += chunk;
-                 }
-             }
-          }
-          
-          setLocalMessages(prev => 
-             prev.map(m => m.id === aiMessageId ? { ...m, content: assistantMessage } : m)
+          assistantMessage += decoder.decode(value, { stream: true });
+
+          setLocalMessages(prev =>
+            prev.map(m => m.id === aiMessageId ? { ...m, content: assistantMessage } : m)
           );
         }
       }
+
+      assistantMessage += decoder.decode();
+
+      setLocalMessages(prev =>
+        prev.map(m => m.id === aiMessageId ? { ...m, content: assistantMessage } : m)
+      );
     } catch (error) {
       console.error("Chat error:", error);
       setLocalMessages(prev => 

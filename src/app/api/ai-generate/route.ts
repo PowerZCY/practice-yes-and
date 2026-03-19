@@ -1,6 +1,5 @@
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { streamText } from 'ai';
-import { error } from 'console';
 import { appConfig } from '@/lib/appConfig';
 
 const appHeaders = {
@@ -25,7 +24,7 @@ async function handleMockResponse(mockType: 'image' | 'txt' | 'audio' | 'video' 
   
   // Mock ads error
   if (process.env.NODE_ENV !== 'production' && appConfig.openrouterAI.enableMockAds) {
-    throw error('MOCK TEST!');
+    throw new Error('MOCK TEST!');
   }
   
   if (mockType === 'txt') {
