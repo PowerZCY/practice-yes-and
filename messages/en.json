@@ -63,30 +63,39 @@
       }
     ]
   },
-  
   "features": {
-    "title": "Everything you need for",
-    "eyesOn": "AI conversation practice",
-    "description": "The homepage combines AI idea generation and scenario practice so you can improve how you respond in real situations and get more value from practice yes and sessions.",
+    "title": "Real-life examples of",
+    "eyesOn": "Yes And in action",
+    "description": "Explore how a Yes And response can shift the tone, lower friction, and create better next steps across work, relationships, parenting, boundaries, and repair.",
     "items": [
       {
-        "title": "AI-powered yes and response ideas",
-        "description": "Type in a tricky moment and get multiple warmer, more constructive response options built around the Yes, And mindset. This is the fastest way to start practice yes and with language you can actually use.",
+        "title": "Work feedback without instant defensiveness",
+        "description": "Someone says: \"This presentation felt rushed and unclear.\"   Yes and response: \"Yes, I can see why it landed that way, and I want to tighten the structure before the next review.\"",
         "iconKey": "Sparkles"
       },
       {
-        "title": "AI difficult conversation practice",
-        "description": "Work through realistic conversation scenarios instead of staying stuck in theory. Practice how to respond before the moment actually happens, and use AI to test different levels of warmth, clarity, and curiosity.",
+        "title": "Relationship tension without shutting down",
+        "description": "Someone says: \"You stop listening as soon as I bring up a problem.\"  Yes and response: \"Yes, I do get defensive too fast, and I want to slow down and stay with what you're saying.\"",
         "iconKey": "Gift"
       },
       {
-        "title": "Real-life scenario categories",
-        "description": "Practice yes and communication for work, relationships, parenting, social life, and improv-style thinking in one place. The category flow makes practice yes and easier to apply to the specific kind of conversation you are facing.",
+        "title": "Parenting with empathy and a clear limit",
+        "description": "Someone says: \"That's not fair. I don't want to leave yet.\" Yes and response: \"Yes, I know leaving feels disappointing, and we still need to go now.\"",
         "iconKey": "Fingerprint"
       },
       {
-        "title": "Active listening and better responses",
-        "description": "Build habits that support more open, collaborative conversations, including active listening, emotional regulation, and response flexibility. Practice Yes And is designed to help better responses feel trainable, not vague.",
+        "title": "Social repair after an awkward moment",
+        "description": "Someone says: \"That joke came off a little harsh.\" Yes and response: \"Yes, I can hear that, and I want to clean it up because I meant to be funny, not dismissive.\"",
+        "iconKey": "BookOpen"
+      },
+      {
+        "title": "Boundaries without sounding hostile",
+        "description": "Someone says: \"Can you just take this on tonight?\" Yes and response: \"Yes, I get why it feels urgent, and I can't do it well tonight without dropping another priority.\"",
+        "iconKey": "Zap"
+      },
+      {
+        "title": "Repair after you reacted poorly",
+        "description": "Someone says: \"Your tone earlier felt sharp.\" Yes and response: \"Yes, it did come out sharper than I wanted, and I want to restart that conversation more carefully.\"",
         "iconKey": "BookOpen"
       }
     ]

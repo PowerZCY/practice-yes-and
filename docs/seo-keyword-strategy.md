@@ -313,9 +313,32 @@ This document should be treated as the working keyword foundation for future tit
   - status: drafted and added to blog index on 2026-03-18
   - CTA direction: route readers back to the homepage AI conversation practice tool and explain the value of using AI roleplay to rehearse tense conversations
 
-### Next In Queue
-
 - `25 Workplace Conversation Scenarios to Practice`
+  - file: `src/mdx/blog/25-workplace-conversation-scenarios-to-practice.mdx`
+  - primary keyword focus: `workplace communication scenarios`
+  - secondary keyword focus: `difficult conversations at work`, `how to respond professionally`
+  - status: drafted and added to blog index on 2026-03-19
+  - CTA direction: route readers back to the homepage AI conversation practice tool and explain the value of using AI roleplay to rehearse high-stakes workplace conversations
+
 - `Communication Exercises for Couples That Improve Listening`
+  - file: `src/mdx/blog/communication-exercises-for-couples-that-improve-listening.mdx`
+  - primary keyword focus: `communication exercises for couples`
+  - secondary keyword focus: `relationship communication exercises`, `healthy communication practice for couples`
+  - status: drafted and added to blog index on 2026-03-19
+  - CTA direction: route readers back to the homepage AI conversation practice tool and explain the value of using AI roleplay to rehearse relationship conversations and listening responses
+
 - `Yes and Parenting: How to Respond Without Escalating`
+  - file: `src/mdx/blog/yes-and-parenting-how-to-respond-without-escalating.mdx`
+  - primary keyword focus: `yes and parenting`
+  - secondary keyword focus: `positive parenting communication`, `how to talk to kids without power struggles`
+  - status: drafted and added to blog index on 2026-03-19
+  - CTA direction: route readers back to the homepage AI conversation practice tool and explain the value of using AI roleplay to rehearse calm parenting responses and boundary-setting language
+
 - `Active Listening Exercises for Real-Life Conversations`
+  - file: `src/mdx/blog/active-listening-exercises-for-real-life-conversations.mdx`
+  - primary keyword focus: `active listening exercises`
+  - secondary keyword focus: `active listening practice`, `empathetic communication exercises`
+  - status: drafted and added to blog index on 2026-03-19
+  - CTA direction: route readers back to the homepage AI conversation practice tool and explain the value of using AI roleplay to rehearse listening, reflection, and follow-up responses
+
+### Next In Queue
