@@ -5,31 +5,17 @@ import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/s
 import { ClerkUser } from '@windrun-huaiin/third-ui/clerk/server';
 import { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { getTranslations } from 'next-intl/server';
-import { CreditPopover } from '@/components/credit-popover';
 import { ExtendedLinkItem, HomeTitle } from '@windrun-huaiin/third-ui/fuma/base';
-import { getOptionalAuth } from '@windrun-huaiin/third-ui/clerk/patch/optional-auth';
 import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
 
 // home page normal menu
 export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> {
   const t1 = await getTranslations({ locale: locale, namespace: 'linkPreview' });
-  const { userId } = await getOptionalAuth();
   return [
     {
       icon: <icons.BugOff />,
       text: t1('blog'),
       url: getAsNeededLocalizedUrl(locale, '/blog'),
-    },
-    // {
-    //   icon: <icons.BTC />,
-    //   text: t1('pricing'),
-    //   url: getAsNeededLocalizedUrl(locale, '/pricing'),
-    // },
-    {
-      type: 'custom',
-      secondary: true,
-      mobilePinned: true,
-      children: userId ? <CreditPopover locale={locale} /> : null,
     },
     {
       type: 'custom',
