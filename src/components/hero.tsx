@@ -1,10 +1,15 @@
 import { getTranslations } from 'next-intl/server'
 import { HeroClient } from './hero-client'
-import { listChatSessionsForCurrentUser } from '@/lib/chat-session-server'
+import { listChatSessionsForCurrentUser } from '@/aggregate/chatSession.aggregate.service'
+import { getOptionalAuth } from '@windrun-huaiin/third-ui/clerk/patch/optional-auth';
 
 export async function Hero({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'hero' });
-  const initialSessions = await listChatSessionsForCurrentUser();
+  const { userId: clerkUserId } = await getOptionalAuth();
+  const initialIsSignedIn = Boolean(clerkUserId);
+  const initialSessions = initialIsSignedIn
+    ? await listChatSessionsForCurrentUser()
+    : [];
 
   return (
     <section className="relative w-full overflow-hidden mt-8 pt-12 pb-8 md:pt-16 md:pb-12">
@@ -27,7 +32,10 @@ export async function Hero({ locale }: { locale: string }) {
 
         {/* Centered Chat Component */}
         <div className="relative z-10 w-full">
-          <HeroClient initialSessions={initialSessions} />
+          <HeroClient
+            initialSessions={initialSessions}
+            initialIsSignedIn={initialIsSignedIn}
+          />
         </div>
       </div>
     </section>

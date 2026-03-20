@@ -30,6 +30,9 @@
       "@/.source": [
         ".source"
       ],
+      "@/db": ["./src/services/database"],
+      "@/db/*": ["./src/services/database/*"],
+      "@/aggregate/*": ["./src/services/aggregate/*"]
     }
   },
   "include": [

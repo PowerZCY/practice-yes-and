@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useAuth } from "@clerk/nextjs";
 import {
   Lightbulb,
   MessageSquareDiff,
@@ -28,7 +29,7 @@ import {
   type Mode,
   type PracticeCategory,
   type Session,
-} from "@/lib/chat-session";
+} from "@/lib/chatSession";
 
 const categories = [
   { id: "parenting", label: "Parent-Child", icon: Baby, color: "text-rose-500", bg: "bg-rose-50" },
@@ -82,29 +83,86 @@ function sortSessions(sessions: Session[]) {
   });
 }
 
-export function HeroClient({ initialSessions }: { initialSessions: Session[] }) {
+export function HeroClient({
+  initialSessions,
+  initialIsSignedIn,
+}: {
+  initialSessions: Session[];
+  initialIsSignedIn: boolean;
+}) {
+  const { isLoaded, isSignedIn } = useAuth();
   const [mode, setMode] = useState<Mode>("idea");
   const [category, setCategory] = useState<PracticeCategory>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const previousIsSignedInRef = useRef<boolean | null>(null);
   
   const [myInput, setMyInput] = useState("");
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
   const [isLocalLoading, setIsLocalLoading] = useState(false);
 
   // History states
-  const [sessions, setSessions] = useState<Session[]>(initialSessions);
+  const [sessions, setSessions] = useState<Session[]>(
+    initialIsSignedIn ? initialSessions : [],
+  );
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(createSessionId);
   const [showHistory, setShowHistory] = useState(false);
-  const [isHistoryReady, setIsHistoryReady] = useState(initialSessions.length > 0);
+  const [isHistoryReady, setIsHistoryReady] = useState(false);
   const [currentSessionName, setCurrentSessionName] = useState<string | null>(null);
   const [currentSessionPinned, setCurrentSessionPinned] = useState(false);
   const [renamingSessionId, setRenamingSessionId] = useState<string | null>(null);
   const [renamingValue, setRenamingValue] = useState("");
 
+  const resetConversation = (nextMode: Mode = mode, nextCategory: PracticeCategory = category) => {
+    setMode(nextMode);
+    setCategory(nextCategory);
+    setLocalMessages([]);
+    setMyInput("");
+    setCurrentSessionName(null);
+    setCurrentSessionPinned(false);
+    setCurrentSessionId(createSessionId());
+    setShowHistory(false);
+    setRenamingSessionId(null);
+    setRenamingValue("");
+  };
+
   useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    const previousIsSignedIn = previousIsSignedInRef.current;
+    previousIsSignedInRef.current = isSignedIn;
+
+    if (previousIsSignedIn === null) {
+      setSessions(isSignedIn ? sortSessions(initialSessions) : []);
+      setIsHistoryReady(!isSignedIn || initialSessions.length > 0);
+      return;
+    }
+
+    if (previousIsSignedIn !== isSignedIn) {
+      setLocalMessages([]);
+      setMyInput("");
+      setCurrentSessionName(null);
+      setCurrentSessionPinned(false);
+      setCurrentSessionId(createSessionId());
+      setShowHistory(false);
+      setRenamingSessionId(null);
+      setRenamingValue("");
+      setSessions([]);
+      setIsHistoryReady(!isSignedIn);
+    }
+  }, [initialSessions, isLoaded, isSignedIn]);
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) {
+      return;
+    }
+
     let isMounted = true;
 
     const loadSessions = async () => {
+      setIsHistoryReady(false);
+
       try {
         const response = await fetch("/api/chat-sessions", { cache: "no-store" });
         if (!response.ok) {
@@ -119,6 +177,7 @@ export function HeroClient({ initialSessions }: { initialSessions: Session[] }) 
       } catch (error) {
         console.error("Failed to load chat sessions", error);
         if (isMounted) {
+          setSessions([]);
           setIsHistoryReady(true);
         }
       }
@@ -129,7 +188,7 @@ export function HeroClient({ initialSessions }: { initialSessions: Session[] }) 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
     const hasPersistableMessages = localMessages.some(
@@ -185,13 +244,7 @@ export function HeroClient({ initialSessions }: { initialSessions: Session[] }) 
   ]);
 
   const startNewSession = (newMode: Mode, newCategory: PracticeCategory = null) => {
-    setMode(newMode);
-    setCategory(newCategory);
-    setLocalMessages([]);
-    setMyInput("");
-    setCurrentSessionName(null);
-    setCurrentSessionPinned(false);
-    setCurrentSessionId(createSessionId());
+    resetConversation(newMode, newCategory);
   };
 
   const loadSession = (session: Session) => {
@@ -402,6 +455,7 @@ export function HeroClient({ initialSessions }: { initialSessions: Session[] }) 
 
   const visibleMessages = localMessages.filter((message) => !isHiddenSessionMessage(message));
   const sortedSessions = sortSessions(sessions);
+  const canShowHistory = Boolean(isLoaded && isSignedIn);
 
   return (
     <div className="relative flex h-[680px] w-full max-w-none flex-col overflow-hidden rounded-[2.5rem] border border-gray-200/60 bg-white/70 font-sans shadow-2xl shadow-rose-500/5 backdrop-blur-3xl">
@@ -448,14 +502,16 @@ export function HeroClient({ initialSessions }: { initialSessions: Session[] }) 
               <Plus className="w-4 h-4" />
             </button>
           </TooltipBottom>
-          <TooltipBottom text="History">
-            <button 
-              onClick={() => setShowHistory(true)} 
-              className="p-2.5 rounded-[1.2rem] bg-transparent text-gray-500 hover:text-rose-500 hover:bg-white hover:shadow-sm transition-all" 
-            >
-              <History className="w-4 h-4" />
-            </button>
-          </TooltipBottom>
+          {canShowHistory ? (
+            <TooltipBottom text="History">
+              <button 
+                onClick={() => setShowHistory(true)} 
+                className="p-2.5 rounded-[1.2rem] bg-transparent text-gray-500 hover:text-rose-500 hover:bg-white hover:shadow-sm transition-all" 
+              >
+                <History className="w-4 h-4" />
+              </button>
+            </TooltipBottom>
+          ) : null}
         </div>
       </div>
 
@@ -612,7 +668,7 @@ export function HeroClient({ initialSessions }: { initialSessions: Session[] }) 
       )}
 
       {/* History Slide-over Panel */}
-      {showHistory && (
+      {canShowHistory && showHistory && (
         <div className="absolute inset-0 bg-gray-900/10 backdrop-blur-[2px] z-50 flex justify-end animate-in fade-in duration-200">
           <div className="w-full sm:w-[360px] h-full bg-white/95 backdrop-blur-xl border-l border-gray-100 shadow-2xl flex flex-col animate-in slide-in-from-right-full duration-300">
             {/* Header */}

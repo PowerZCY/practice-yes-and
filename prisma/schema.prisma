@@ -22,12 +22,34 @@ model User {
   updatedAt     DateTime?      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   sourceRef     Json?          @map("source_ref")
   creditAuditLogs   CreditAuditLog[]
+  chatSessions  ChatSession[]
   credit       Credit?
   subscription  Subscription?
   transactions  Transaction[]
 
   @@index([fingerprintId], map: "idx_users_fingerprint_id")
   @@map("users")
+
+  @@schema("yesand")
+}
+
+model ChatSession {
+  id           BigInt    @id @default(autoincrement())
+  sessionId    String    @unique @map("session_id") @db.VarChar(100)
+  userId       String    @map("user_id") @db.Uuid
+  sessionScope String    @map("session_scope") @db.VarChar(20)
+  mode         String    @db.VarChar(50)
+  category     String?   @db.VarChar(50)
+  messages     Json      @default("[]")
+  isPinned     Int       @default(0) @map("is_pinned")
+  sessionName  String?   @map("session_name") @db.VarChar(255)
+  createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime? @default(now()) @map("updated_at") @db.Timestamptz(6)
+  deleted      Int       @default(0)
+  user         User      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([userId, sessionScope], map: "idx_chat_sessions_user_id_scope")
+  @@map("chat_sessions")
 
   @@schema("yesand")
 }

@@ -4,8 +4,8 @@ import {
   listChatSessionsForCurrentUser,
   saveChatSessionForCurrentUser,
   updateChatSessionForCurrentUser,
-} from "@/lib/chat-session-server";
-import type { Message, Mode, PracticeCategory } from "@/lib/chat-session";
+} from "@/aggregate/chatSession.aggregate.service";
+import type { Message, Mode, PracticeCategory } from "@/lib/chatSession";
 
 type SaveSessionBody = {
   id: string;
