@@ -70,32 +70,32 @@
     "items": [
       {
         "title": "Work feedback without instant defensiveness",
-        "description": "Someone says: \"This presentation felt rushed and unclear.\"   Yes and response: \"Yes, I can see why it landed that way, and I want to tighten the structure before the next review.\"",
+        "description": "Someone says: \"This presentation felt rushed and unclear.\" <br></br>Yes and response: \"Yes, I can see why it landed that way, and I want to tighten the structure before the next review.\"",
         "iconKey": "Sparkles"
       },
       {
         "title": "Relationship tension without shutting down",
-        "description": "Someone says: \"You stop listening as soon as I bring up a problem.\"  Yes and response: \"Yes, I do get defensive too fast, and I want to slow down and stay with what you're saying.\"",
+        "description": "Someone says: \"You stop listening as soon as I bring up a problem.\" <br></br>Yes and response: \"Yes, I do get defensive too fast, and I want to slow down and stay with what you're saying.\"",
         "iconKey": "Gift"
       },
       {
         "title": "Parenting with empathy and a clear limit",
-        "description": "Someone says: \"That's not fair. I don't want to leave yet.\" Yes and response: \"Yes, I know leaving feels disappointing, and we still need to go now.\"",
+        "description": "Someone says: \"That's not fair. I don't want to leave yet.\" <br></br>Yes and response: \"Yes, I know leaving feels disappointing, and we still need to go now.\"",
         "iconKey": "Fingerprint"
       },
       {
         "title": "Social repair after an awkward moment",
-        "description": "Someone says: \"That joke came off a little harsh.\" Yes and response: \"Yes, I can hear that, and I want to clean it up because I meant to be funny, not dismissive.\"",
+        "description": "Someone says: \"That joke came off a little harsh.\" <br></br>Yes and response: \"Yes, I can hear that, and I want to clean it up because I meant to be funny, not dismissive.\"",
         "iconKey": "BookOpen"
       },
       {
         "title": "Boundaries without sounding hostile",
-        "description": "Someone says: \"Can you just take this on tonight?\" Yes and response: \"Yes, I get why it feels urgent, and I can't do it well tonight without dropping another priority.\"",
+        "description": "Someone says: \"Can you just take this on tonight?\" <br></br>Yes and response: \"Yes, I get why it feels urgent, and I can't do it well tonight without dropping another priority.\"",
         "iconKey": "Zap"
       },
       {
         "title": "Repair after you reacted poorly",
-        "description": "Someone says: \"Your tone earlier felt sharp.\" Yes and response: \"Yes, it did come out sharper than I wanted, and I want to restart that conversation more carefully.\"",
+        "description": "Someone says: \"Your tone earlier felt sharp.\" <br></br>Yes and response: \"Yes, it did come out sharper than I wanted, and I want to restart that conversation more carefully.\"",
         "iconKey": "BookOpen"
       }
     ]

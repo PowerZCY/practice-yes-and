@@ -530,8 +530,15 @@ export function HeroClient({
             <div className="space-y-3">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Got a tricky situation?</h3>
               <p className="text-gray-500 text-sm sm:text-base max-w-[90%] sm:max-w-[80%] mx-auto leading-relaxed">
-                Share what someone said or a challenge you&#39;re facing.<br/>
-                I&#39;ll generate a few warm, &#34;Yes, And&#34; ways to respond.
+                <span className="block sm:whitespace-nowrap">
+                  Share what someone said or a challenge you&#39;re facing.
+                </span>
+                <span className="block sm:whitespace-nowrap">
+                  Type the conversation or situation into the input box below,
+                </span>
+                <span className="block sm:whitespace-nowrap">
+                  and I&#39;ll generate a few warm, &#34;Yes, And&#34; ways to respond.
+                </span>
               </p>
             </div>
           </div>
@@ -632,7 +639,7 @@ export function HeroClient({
                isLocalLoading 
                  ? "AI is responding..." 
                  : mode === "idea"
-                   ? "E.g., My boss wants this done by tonight..."
+                   ? "Type the conversation or situation here. E.g., My boss wants this done by tonight..."
                    : "Type your 'Yes, And' response..."
              }
              onChange={(e) => {
