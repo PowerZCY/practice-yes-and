@@ -60,7 +60,7 @@ importers:
         specifier: ^14.0.0
         version: 14.0.0(clsx@2.1.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)
       '@windrun-huaiin/third-ui':
-        specifier: ^14.0.1
+        specifier: 14.0.1
         version: 14.0.1(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(clsx@2.1.1)(lucide-react@0.575.0(react@19.2.4))(next-intl@4.8.3(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(next-themes@0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.1.6(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(nprogress@0.2.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwind-merge@3.5.0)(tailwindcss@4.2.1)(typescript@5.9.3)
       ai:
         specifier: ^6.0.116
@@ -193,8 +193,8 @@ importers:
         specifier: ^8.56.1
         version: 8.57.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       '@windrun-huaiin/dev-scripts':
-        specifier: ^14.1.1
-        version: 14.1.1(typescript@5.9.3)
+        specifier: ^14.1.2
+        version: 14.1.2(typescript@5.9.3)
       baseline-browser-mapping:
         specifier: ^2.10.0
         version: 2.10.8
@@ -2242,8 +2242,8 @@ packages:
       tailwind-merge: ^3.5.0
       tailwindcss: ^4.2.1
 
-  '@windrun-huaiin/dev-scripts@14.1.1':
-    resolution: {integrity: sha512-uiidpFYvN1xlm1lcMxNDqXNiC8QUO0QjHsnjm6rZoKq7PZAbm6UyqKknrENdobIRTrK0PDfVwS7JNc8oI5jdjg==}
+  '@windrun-huaiin/dev-scripts@14.1.2':
+    resolution: {integrity: sha512-xGWe3yKaEm2+k0e3X3WiBIeE1vuNuR7csWCryxCGtKsHppDiRXETRSrRlrfiMOhqiEjkUrwUH7baoCoC/Uc/bw==}
     hasBin: true
     peerDependencies:
       typescript: ^5.8.3
@@ -7065,7 +7065,7 @@ snapshots:
       - '@types/react-dom'
       - supports-color
 
-  '@windrun-huaiin/dev-scripts@14.1.1(typescript@5.9.3)':
+  '@windrun-huaiin/dev-scripts@14.1.2(typescript@5.9.3)':
     dependencies:
       commander: 12.1.0
       fast-glob: 3.3.3

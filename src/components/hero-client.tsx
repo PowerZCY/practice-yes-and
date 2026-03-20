@@ -527,17 +527,17 @@ export function HeroClient({
                 <Lightbulb className="w-10 h-10 sm:w-12 sm:h-12 text-orange-400" />
               </div>
             </div>
-            <div className="space-y-3">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Got a tricky situation?</h3>
-              <p className="text-gray-500 text-sm sm:text-base max-w-[90%] sm:max-w-[80%] mx-auto leading-relaxed">
+            <div className="space-y-3 flex flex-col items-center">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Better responses for difficult moments.</h3>
+              <p className="text-gray-500 text-sm sm:text-base mx-auto leading-relaxed text-center inline-flex flex-col items-center">
                 <span className="block sm:whitespace-nowrap">
-                  Share what someone said or a challenge you&#39;re facing.
+                  Find a warmer way to respond.
                 </span>
                 <span className="block sm:whitespace-nowrap">
-                  Type the conversation or situation into the input box below,
+                  Share what someone said or describe the situation.
                 </span>
                 <span className="block sm:whitespace-nowrap">
-                  and I&#39;ll generate a few warm, &#34;Yes, And&#34; ways to respond.
+                  Type it into the box below to get thoughtful &#34;Yes, And&#34; replies.
                 </span>
               </p>
             </div>
