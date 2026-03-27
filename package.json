@@ -26,10 +26,10 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@tailwindcss/typography": "^0.5.19",
     "@types/mdx": "^2.0.13",
-    "@windrun-huaiin/backend-core": "14.2.0",
-    "@windrun-huaiin/base-ui": "^14.0.2",
-    "@windrun-huaiin/lib": "^14.0.0",
-    "@windrun-huaiin/third-ui": "14.1.1",
+    "@windrun-huaiin/backend-core": "14.3.0",
+    "@windrun-huaiin/base-ui": "14.0.3",
+    "@windrun-huaiin/lib": "14.0.1",
+    "@windrun-huaiin/third-ui": "14.4.0",
     "ai": "^6.0.116",
     "autoprefixer": "^10.4.27",
     "class-variance-authority": "^0.7.1",
@@ -75,7 +75,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.56.1",
-    "@windrun-huaiin/dev-scripts": "^14.1.2",
+    "@windrun-huaiin/dev-scripts": "^14.1.3",
     "baseline-browser-mapping": "^2.10.0",
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.1.6",
@@ -90,6 +90,19 @@
     "typescript": "^5.8.3",
     "unist-util-visit": "^5.1.0"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@clerk/shared",
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "@swc/core",
+      "esbuild",
+      "prisma",
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
   "scripts": {
     "dev": "prisma generate && next dev",
     "build": "pnpm generate-blog-index && prisma generate && next build",
@@ -101,7 +114,7 @@
     "deep-clean": "dev-scripts deep-clean",
     "d8": "pnpm run deep-clean",
     "diaomao-help": "dev-scripts -h",
-    "diaomao-update": "dev-scripts diaomao-update -v",
+    "diaomao-update": "pnpm add -D @windrun-huaiin/dev-scripts@latest && pnpm exec dev-scripts diaomao-update -v",
     "easy-changeset": "dev-scripts easy-changeset",
     "dj": "pnpm run easy-changeset && pnpm changeset status",
     "djv": "pnpm changeset version",
