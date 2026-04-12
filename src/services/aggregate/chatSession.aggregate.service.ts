@@ -3,9 +3,8 @@ import { headers, cookies } from "next/headers";
 import type { ChatSession as PrismaChatSession, Prisma } from "@prisma/client";
 import { prisma } from "@windrun-huaiin/backend-core/prisma";
 import { userAggregateService } from "@windrun-huaiin/backend-core/aggregate";
-import { userService } from "@windrun-huaiin/backend-core/database";
 import { fetchLatestUserContextByFingerprintId } from "@windrun-huaiin/backend-core/context";
-import { getOptionalAuth } from "@windrun-huaiin/third-ui/clerk/patch/optional-auth";
+import { getOptionalServerAuthUser } from '@windrun-huaiin/backend-core/auth/server';
 import {
   extractFingerprintFromNextRequest,
   extractFingerprintFromNextStores,
@@ -101,15 +100,13 @@ async function resolveUserIdByFingerprint(fingerprintId: string) {
 export async function resolveCurrentChatSessionIdentity(
   request?: Request,
 ): Promise<ChatSessionIdentity | null> {
-  const { userId: clerkUserId } = await getOptionalAuth();
-  if (clerkUserId) {
-    const user = await userService.findByClerkUserId(clerkUserId);
-    if (user?.userId) {
-      return {
-        userId: user.userId,
-        scope: "authenticated",
-      };
-    }
+  const authUser = await getOptionalServerAuthUser();
+  if (authUser) {
+    const { user } = authUser;
+    return {
+      userId: user.userId,
+      scope: "authenticated",
+    };
   }
 
   const fingerprintId = request

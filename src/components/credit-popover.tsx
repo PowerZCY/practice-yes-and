@@ -1,5 +1,5 @@
-import { creditService, subscriptionService, userService } from '@windrun-huaiin/backend-core/database';
-import { auth } from '@clerk/nextjs/server';
+import { creditService, subscriptionService } from '@windrun-huaiin/backend-core/database';
+import { getOptionalServerAuthUser } from '@windrun-huaiin/backend-core/auth/server';
 import { viewLocalTime } from '@windrun-huaiin/lib/utils';
 import { CreditNavButton } from '@windrun-huaiin/third-ui/main';
 import type { CreditOverviewData } from '@windrun-huaiin/third-ui/main/server';
@@ -14,17 +14,11 @@ interface CreditPopoverProps {
 }
 
 export async function CreditPopover({ locale }: CreditPopoverProps) {
-  const { userId: clerkUserId } = await auth();
-
-  if (!clerkUserId) {
+  const authUser = await getOptionalServerAuthUser();
+  if (!authUser) {
     return null;
   }
-
-  const user = await userService.findByClerkUserId(clerkUserId);
-  if (!user) {
-    console.warn('User not found!');
-    return null;
-  }
+  const { user } = authUser;
 
   const enableSubscriptionUpgrade = process.env.ENABLE_STRIPE_SUBSCRIPTION_UPGRADE !== 'false';
 

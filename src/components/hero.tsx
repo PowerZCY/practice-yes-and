@@ -1,12 +1,12 @@
 import { getTranslations } from 'next-intl/server'
 import { HeroClient } from './hero-client'
 import { listChatSessionsForCurrentUser } from '@/aggregate/chatSession.aggregate.service'
-import { getOptionalAuth } from '@windrun-huaiin/third-ui/clerk/patch/optional-auth';
+import { getOptionalServerAuthUser } from '@windrun-huaiin/backend-core/auth/server';
 
 export async function Hero({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'hero' });
-  const { userId: clerkUserId } = await getOptionalAuth();
-  const initialIsSignedIn = Boolean(clerkUserId);
+  const authUser = await getOptionalServerAuthUser();
+  const initialIsSignedIn = Boolean(authUser?.user?.clerkUserId);
   const initialSessions = initialIsSignedIn
     ? await listChatSessionsForCurrentUser()
     : [];

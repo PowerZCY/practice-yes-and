@@ -6,6 +6,7 @@
 
 
 import { appConfig } from "@/lib/appConfig";
+import { buildProtectedPageRoutePatterns, handleAuthMiddleware } from "@windrun-huaiin/backend-core/auth/middleware";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
@@ -18,9 +19,12 @@ const intlMiddleware = createMiddleware({
 });
 
 // 需要身份认证的路由（页面路由）
-const protectedPageRoutes = createRouteMatcher([
-  // '/(.*)/(dashboard|settings|profile|billing)/(.*)',
-]);
+const protectedPageRoutes = createRouteMatcher(
+  buildProtectedPageRoutePatterns(
+    ['/dashboard', '/settings', '/profile', '/billing'],
+    appConfig.i18n.locales
+  )
+);
 
 // 需要身份认证的API路由
 const protectedApiRoutes = createRouteMatcher([
@@ -58,6 +62,16 @@ export default clerkMiddleware(
       (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
     );
 
+    const authResponse = await handleAuthMiddleware(auth, req, {
+      protectedPageRoutes,
+      protectedApiRoutes,
+      publicApiRoutes,
+      intlMiddleware,
+    });
+    if (authResponse) {
+      return authResponse;
+    }
+
     // 对于无语言前缀的页面请求，根据配置进行处理
     // 避免落不到 [locale] 路由。
     if (!hasLocalePrefix && !pathname.startsWith('/api/')) {
@@ -75,44 +89,7 @@ export default clerkMiddleware(
       }
     }
 
-    // 1. 处理需要认证的页面路由
-    if (protectedPageRoutes(req)) {
-      const { userId: clerkUserId } = await auth();
-      if (!clerkUserId) return (await auth()).redirectToSignIn();
-
-      // 对于页面路由，只设置 Clerk 用户信息
-      const response = intlMiddleware(req);
-      if (response) {
-        response.headers.set("x-clerk-user-id", clerkUserId);
-        console.log("Set clerk_user_id for protected page:", clerkUserId);
-      }
-      return response;
-    }
-
-    // 2. 处理需要认证的API路由
-    if (protectedApiRoutes(req)) {
-      const { userId: clerkUserId } = await auth();
-      if (!clerkUserId) return (await auth()).redirectToSignIn();
-
-      // 只设置 Clerk 用户信息，让 API 自己处理数据库查询
-      const response = NextResponse.next();
-      response.headers.set("x-clerk-user-id", clerkUserId);
-      console.log("Set clerk_user_id for protected API:", clerkUserId);
-      return response;
-    }
-
-    // 3. 免认证的API路由，直接通过
-    if (publicApiRoutes(req)) {
-      console.log("Public API route, no auth required:", req.nextUrl.pathname);
-      return NextResponse.next();
-    }
-
-    // 4. 所有其他API路由都直接通过，不添加语言前缀
-    if (req.nextUrl.pathname.startsWith("/api/")) {
-      console.log("Other API route, no internationalization:", req.nextUrl.pathname);
-      return NextResponse.next();
-    }
-
+    
     // 5. 其他路由使用默认的国际化中间件处理
 
     // handle trailing slash redirect
