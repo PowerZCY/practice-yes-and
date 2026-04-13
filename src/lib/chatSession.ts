@@ -12,6 +12,13 @@ export type Message = {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
+  status?:
+    | "streaming"
+    | "completed"
+    | "stopped"
+    | "timeout"
+    | "request_aborted"
+    | "upstream_interrupted";
 };
 
 export type Session = {
@@ -25,9 +32,42 @@ export type Session = {
 };
 
 export const HIDDEN_SYSTEM_COMMAND = "[Hidden System Command]";
+export const DEFAULT_CONTEXT_WINDOW_TURNS = 6;
 
 export function isHiddenSessionMessage(message: Message) {
   return message.content.includes(HIDDEN_SYSTEM_COMMAND);
+}
+
+export function getVisibleConversationMessages(messages: Message[]) {
+  return messages.filter((message) => !isHiddenSessionMessage(message));
+}
+
+export function buildConversationWindow(
+  messages: Message[],
+  maxUserTurns = DEFAULT_CONTEXT_WINDOW_TURNS,
+) {
+  if (maxUserTurns <= 0) {
+    return [];
+  }
+
+  const visibleMessages = getVisibleConversationMessages(messages);
+  const windowedMessages: Message[] = [];
+  let userTurnCount = 0;
+
+  for (let index = visibleMessages.length - 1; index >= 0; index -= 1) {
+    const message = visibleMessages[index];
+
+    if (message.role === "user") {
+      userTurnCount += 1;
+      if (userTurnCount > maxUserTurns) {
+        break;
+      }
+    }
+
+    windowedMessages.unshift(message);
+  }
+
+  return windowedMessages;
 }
 
 export function extractFirstParagraph(content: string) {

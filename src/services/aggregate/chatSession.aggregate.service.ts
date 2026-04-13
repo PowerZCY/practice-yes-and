@@ -43,7 +43,14 @@ function normalizeMessages(value: Prisma.JsonValue): Message[] {
       (message.role !== "user" &&
         message.role !== "assistant" &&
         message.role !== "system") ||
-      typeof message.content !== "string"
+      typeof message.content !== "string" ||
+      (message.status !== undefined &&
+        message.status !== "streaming" &&
+        message.status !== "completed" &&
+        message.status !== "stopped" &&
+        message.status !== "timeout" &&
+        message.status !== "request_aborted" &&
+        message.status !== "upstream_interrupted")
     ) {
       return [];
     }
@@ -53,6 +60,7 @@ function normalizeMessages(value: Prisma.JsonValue): Message[] {
         id: message.id,
         role: message.role,
         content: message.content,
+        ...(message.status !== undefined ? { status: message.status } : {}),
       },
     ];
   });

@@ -3,24 +3,27 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import {
   Lightbulb,
+  CircleStop,
+  Heart,
+  X,
+  Pencil,
+
   MessageSquareDiff,
   Briefcase,
-  Heart,
   Coffee,
   Wand2,
   Baby,
   Send,
-  Loader2,
   RefreshCcw,
   Sparkles,
   History,
   Trash2,
-  X,
   Plus,
-  Pin,
-  Pencil
+  Pin
 } from "lucide-react";
 import {
+  buildConversationWindow,
+  DEFAULT_CONTEXT_WINDOW_TURNS,
   getSessionDisplayTitle,
   getSessionPreview,
   HIDDEN_SYSTEM_COMMAND,
@@ -30,6 +33,11 @@ import {
   type PracticeCategory,
   type Session,
 } from "@/lib/chatSession";
+import { appConfig } from "@/lib/appConfig";
+import {
+  ASSISTANT_STATUS_COPY,
+  PRACTICE_INITIAL_USER_PROMPT,
+} from "@/lib/ai-generate-content";
 
 const categories = [
   { id: "parenting", label: "Parent-Child", icon: Baby, color: "text-rose-500", bg: "bg-rose-50" },
@@ -95,6 +103,7 @@ export function HeroClient({
   const [category, setCategory] = useState<PracticeCategory>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const previousIsSignedInRef = useRef<boolean | null>(null);
+  const requestAbortControllerRef = useRef<AbortController | null>(null);
   
   const [myInput, setMyInput] = useState("");
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
@@ -112,7 +121,13 @@ export function HeroClient({
   const [renamingSessionId, setRenamingSessionId] = useState<string | null>(null);
   const [renamingValue, setRenamingValue] = useState("");
 
+  const abortActiveRequest = (reason: string = "user") => {
+    requestAbortControllerRef.current?.abort(reason);
+    requestAbortControllerRef.current = null;
+  };
+
   const resetConversation = (nextMode: Mode = mode, nextCategory: PracticeCategory = category) => {
+    abortActiveRequest();
     setMode(nextMode);
     setCategory(nextCategory);
     setLocalMessages([]);
@@ -140,6 +155,7 @@ export function HeroClient({
     }
 
     if (previousIsSignedIn !== isSignedIn) {
+      abortActiveRequest();
       setLocalMessages([]);
       setMyInput("");
       setCurrentSessionName(null);
@@ -248,6 +264,7 @@ export function HeroClient({
   };
 
   const loadSession = (session: Session) => {
+    abortActiveRequest();
     setMode(session.mode);
     setCategory(session.category);
     setLocalMessages(session.messages);
@@ -366,26 +383,53 @@ export function HeroClient({
   };
 
   const sendMessage = async (currentMessages: Message[], isInitial = false) => {
+    abortActiveRequest();
     setIsLocalLoading(true);
     const aiMessageId = Date.now().toString() + "-ai";
-    setLocalMessages(prev => [...prev, { id: aiMessageId, role: 'assistant', content: '' }]);
+    const abortController = new AbortController();
+    requestAbortControllerRef.current = abortController;
+    setLocalMessages(prev => [
+      ...prev,
+      { id: aiMessageId, role: 'assistant', content: '', status: "streaming" },
+    ]);
 
     try {
+      const requestMessages = buildConversationWindow(
+        currentMessages,
+        appConfig.openrouterAI.contextWindowTurns || DEFAULT_CONTEXT_WINDOW_TURNS,
+      );
+
       const response = await fetch("/api/ai-generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: currentMessages.map(m => ({ role: m.role, content: m.content })),
+          messages: requestMessages.map(m => ({ role: m.role, content: m.content })),
           context: mode === "practice" ? `practice-${category}` : "idea",
-          isInitialPractice: isInitial
+          isInitialPractice: isInitial,
+          sessionId: currentSessionId,
         }),
+        signal: abortController.signal,
       });
 
-      if (!response.ok) throw new Error(response.statusText);
+      if (!response.ok) {
+        let responseError = "";
+
+        try {
+          const errorBody = (await response.json()) as { error?: string };
+          responseError = errorBody.error || "";
+        } catch {
+          responseError = "";
+        }
+
+        const error = new Error(responseError || response.statusText);
+        error.name = "AIRequestError";
+        throw error;
+      }
       if (!response.body) throw new Error("No response body");
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      const mockStreamError = response.headers.get("X-AI-Stream-Error");
       let assistantMessage = "";
 
       while (true) {
@@ -396,25 +440,91 @@ export function HeroClient({
           assistantMessage += decoder.decode(value, { stream: true });
 
           setLocalMessages(prev =>
-            prev.map(m => m.id === aiMessageId ? { ...m, content: assistantMessage } : m)
+            prev.map(m => m.id === aiMessageId ? { ...m, content: assistantMessage, status: "streaming" } : m)
           );
         }
       }
 
       assistantMessage += decoder.decode();
 
-      setLocalMessages(prev =>
-        prev.map(m => m.id === aiMessageId ? { ...m, content: assistantMessage } : m)
+      setLocalMessages((prev) =>
+        prev.map((message) => {
+          if (message.id !== aiMessageId) {
+            return message;
+          }
+
+          return {
+            ...message,
+            content: assistantMessage,
+            status:
+              mockStreamError === "timeout"
+                ? "timeout"
+                : mockStreamError === "request_aborted"
+                  ? "request_aborted"
+                  : mockStreamError === "upstream_interrupted"
+                    ? "upstream_interrupted"
+                    : "completed",
+          };
+        }),
       );
     } catch (error) {
-      console.error("Chat error:", error);
-      setLocalMessages(prev => 
-         prev.map(m => m.id === aiMessageId ? { ...m, content: "Sorry, I encountered an error connecting to the AI. Please try again." } : m)
+      if (abortController.signal.aborted) {
+      setLocalMessages((prev) =>
+        prev.map((message) => {
+          if (message.id !== aiMessageId) {
+            return message;
+          }
+
+          const normalizedContent = message.content.trim();
+          return {
+            ...message,
+            content: normalizedContent,
+            status:
+              abortController.signal.reason === "user"
+                ? "stopped"
+                : abortController.signal.reason === "timeout"
+                  ? "timeout"
+                  : "request_aborted",
+          };
+        }),
       );
+      return;
+    }
+
+      setLocalMessages((prev) =>
+        prev.map((message) => {
+          if (message.id !== aiMessageId) {
+            return message;
+          }
+
+          const normalizedContent = message.content.trim();
+          return {
+            ...message,
+            content: normalizedContent,
+            status:
+              error instanceof Error && error.message === "timeout"
+                ? "timeout"
+                : error instanceof Error && error.message === "request_aborted"
+                  ? "request_aborted"
+                  : "upstream_interrupted",
+          };
+        }),
+      );
+
+      console.error("Chat error:", error);
     } finally {
+      if (requestAbortControllerRef.current === abortController) {
+        requestAbortControllerRef.current = null;
+      }
       setIsLocalLoading(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      abortActiveRequest();
+    };
+  }, []);
 
   const handleCustomSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -447,7 +557,7 @@ export function HeroClient({
     const initMsg: Message = { 
         id: "init", 
         role: "user", 
-        content: "Please generate the first scenario statement for me in character. Just the statement, nothing else." 
+        content: PRACTICE_INITIAL_USER_PROMPT,
     };
     setLocalMessages([{ ...initMsg, content: HIDDEN_SYSTEM_COMMAND }]); 
     sendMessage([initMsg], true);
@@ -591,6 +701,26 @@ export function HeroClient({
               }`}
             >
               {m.content}
+              {m.role === "assistant" && m.status === "stopped" ? (
+                <div className="mt-3 text-xs font-medium text-rose-500">
+                  {ASSISTANT_STATUS_COPY.stopped}
+                </div>
+              ) : null}
+              {m.role === "assistant" && m.status === "timeout" ? (
+                <div className="mt-3 text-xs font-medium text-rose-500">
+                  {ASSISTANT_STATUS_COPY.timeout}
+                </div>
+              ) : null}
+              {m.role === "assistant" && m.status === "request_aborted" ? (
+                <div className="mt-3 text-xs font-medium text-rose-500">
+                  {ASSISTANT_STATUS_COPY.requestAborted}
+                </div>
+              ) : null}
+              {m.role === "assistant" && m.status === "upstream_interrupted" ? (
+                <div className="mt-3 text-xs font-medium text-rose-500">
+                  {ASSISTANT_STATUS_COPY.upstreamInterrupted}
+                </div>
+              ) : null}
             </div>
           </div>
         ))}
@@ -616,28 +746,15 @@ export function HeroClient({
         <div className="p-3 sm:p-4 bg-white/60 backdrop-blur-xl border-t border-gray-100 z-10">
           <form
             onSubmit={handleCustomSubmit}
-            className="flex items-end gap-2 sm:gap-3 bg-white rounded-3xl p-1.5 sm:p-2 pr-2 sm:pr-3 border border-gray-200 focus-within:border-orange-300 focus-within:ring-4 focus-within:ring-orange-100/50 transition-all shadow-sm"
+            className="bg-white rounded-3xl p-1.5 sm:p-2 border border-gray-200 focus-within:border-orange-300 focus-within:ring-4 focus-within:ring-orange-100/50 transition-all shadow-sm"
           >
-            {mode === 'practice' && category && (
-               <TooltipTop text="Change Category">
-               <button
-                 type="button"
-                 onClick={() => {
-                   startNewSession("practice", null);
-                 }}
-                 className="p-3 sm:p-4 text-gray-400 hover:text-rose-500 transition-colors rounded-[1.2rem] hover:bg-rose-50 mb-0.5 ml-0.5"
-               >
-                 <RefreshCcw className="w-4 h-4 sm:w-5 sm:h-5" />
-               </button>
-             </TooltipTop>
-            )}
             <textarea
-             className="flex-1 bg-transparent border-none outline-none text-[15px] sm:text-[16px] text-gray-800 px-3 sm:px-4 py-3 sm:py-4 placeholder:text-gray-400 resize-none min-h-[50px] sm:min-h-[56px] max-h-[120px] sm:max-h-[150px]"
+             className="w-full bg-transparent border-none outline-none text-[15px] sm:text-[16px] text-gray-800 px-3 sm:px-4 pt-3 sm:pt-3.5 pb-1.5 sm:pb-2 placeholder:text-gray-400 resize-none min-h-[44px] sm:min-h-[48px] max-h-[160px] sm:max-h-[190px]"
              rows={1}
              value={myInput}
              placeholder={
-               isLocalLoading 
-                 ? "AI is responding..." 
+               isLocalLoading
+                 ? "AI is responding... Click stop to cancel."
                  : mode === "idea"
                    ? "Type the conversation or situation here. E.g., My boss wants this done by tonight..."
                    : "Type your 'Yes, And' response..."
@@ -656,21 +773,44 @@ export function HeroClient({
              }}
              disabled={isLocalLoading || (mode === 'practice' && localMessages.length === 0)}
             />
-            <button
-             type="submit"
-             disabled={isLocalLoading || (!myInput.trim() && !(mode === 'practice' && localMessages.length === 0))}
-             className={`p-3 sm:p-4 rounded-[1.2rem] bg-linear-to-br from-orange-400 to-rose-400 text-white hover:shadow-lg hover:shadow-rose-400/40 disabled:opacity-40 disabled:hover:shadow-none transition-all group mb-0.5 ${isLocalLoading ? 'animate-pulse' : ''}`}
-            >
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3 px-1.5 sm:px-2 pb-1 pt-0.5">
+              <div className="flex min-w-0 items-center gap-2">
+                {mode === 'practice' && category ? (
+                  <TooltipTop text="Change Category">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        startNewSession("practice", null);
+                      }}
+                      className="shrink-0 p-2 text-gray-400 hover:text-rose-500 transition-colors rounded-xl hover:bg-rose-50"
+                    >
+                      <RefreshCcw className="w-4 h-4" />
+                    </button>
+                  </TooltipTop>
+                ) : null}
+              </div>
+              <div className="min-w-0 text-center text-[10px] sm:text-[11px] font-medium text-gray-400 tracking-wide uppercase">
+                <span className="truncate block">Press Enter to send, Shift+Enter for new line</span>
+              </div>
               {isLocalLoading ? (
-                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                <button
+                 type="button"
+                 onClick={() => abortActiveRequest("user")}
+                 className="relative justify-self-end shrink-0 p-3 sm:p-3.5 rounded-[1.2rem] bg-linear-to-br from-orange-400 to-rose-400 text-white shadow-lg shadow-rose-400/30 hover:shadow-xl hover:shadow-rose-400/40 transition-all"
+                >
+                  <CircleStop className="w-4 h-4 sm:w-5 sm:h-5 animate-spin [animation-duration:2s]" />
+                </button>
               ) : (
-                <Send className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <button
+                 type="submit"
+                 disabled={!myInput.trim() && !(mode === 'practice' && localMessages.length === 0)}
+                 className="justify-self-end shrink-0 p-3 sm:p-3.5 rounded-[1.2rem] bg-linear-to-br from-orange-400 to-rose-400 text-white hover:shadow-lg hover:shadow-rose-400/40 disabled:opacity-40 disabled:hover:shadow-none transition-all group"
+                >
+                  <Send className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </button>
               )}
-            </button>
+            </div>
           </form>
-          <div className="text-center mt-2.5">
-             <span className="text-[10px] sm:text-[11px] font-medium text-gray-400 tracking-wide uppercase">Press Enter to send, Shift+Enter for new line</span>
-          </div>
         </div>
       )}
 

@@ -10,9 +10,12 @@ export const appConfig = {
     modelName: process.env.NEXT_PUBLIC_OPENROUTER_MODEL_NAME || 'google/gemini-2.0-flash-001',
     // 默认启用mock，防止DEV飞速消耗token数量
     enableMock: process.env.OPENROUTER_ENABLE_MOCK !== 'false',
-    enableMockAds: process.env.OPENROUTER_ENABLE_MOCK_ADS === 'true',
-    enableMockTimeout: process.env.OPENROUTER_ENABLE_MOCK_TIMEOUT === 'true',
+    mockType: Number(process.env.OPENROUTER_MOCK_TYPE) || 0,
     mockTimeoutSeconds: Number(process.env.OPENROUTER_MOCK_TIMEOUT_SECONDS) || 3,
+    mockStreamChunkDelayMs: Number(process.env.OPENROUTER_MOCK_STREAM_CHUNK_DELAY_MS) || 60,
+    // mock stream chunks are grouped by word count, not byte count
+    mockStreamChunkSize: Number(process.env.OPENROUTER_MOCK_STREAM_CHUNK_SIZE) || 8,
+    contextWindowTurns: Number(process.env.NEXT_PUBLIC_CHAT_CONTEXT_WINDOW_TURNS) || 6,
     // 单词请求限制消耗的token数量
     limitMaxWords: 500
   },
