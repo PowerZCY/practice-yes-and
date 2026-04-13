@@ -55,7 +55,13 @@ function isValidMessage(value: unknown): value is Message {
       message.status === "stopped" ||
       message.status === "timeout" ||
       message.status === "request_aborted" ||
-      message.status === "upstream_interrupted")
+      message.status === "upstream_interrupted") &&
+    (message.requestedAt === undefined || typeof message.requestedAt === "number") &&
+    (message.firstTokenAt === undefined || typeof message.firstTokenAt === "number") &&
+    (message.finishedAt === undefined || typeof message.finishedAt === "number") &&
+    (message.firstTokenLatencyMs === undefined ||
+      typeof message.firstTokenLatencyMs === "number") &&
+    (message.totalDurationMs === undefined || typeof message.totalDurationMs === "number")
   );
 }
 

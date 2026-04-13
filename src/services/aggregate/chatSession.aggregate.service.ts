@@ -60,6 +60,21 @@ function normalizeMessages(value: Prisma.JsonValue): Message[] {
         id: message.id,
         role: message.role,
         content: message.content,
+        ...(typeof message.requestedAt === "number"
+          ? { requestedAt: message.requestedAt }
+          : {}),
+        ...(typeof message.firstTokenAt === "number"
+          ? { firstTokenAt: message.firstTokenAt }
+          : {}),
+        ...(typeof message.finishedAt === "number"
+          ? { finishedAt: message.finishedAt }
+          : {}),
+        ...(typeof message.firstTokenLatencyMs === "number"
+          ? { firstTokenLatencyMs: message.firstTokenLatencyMs }
+          : {}),
+        ...(typeof message.totalDurationMs === "number"
+          ? { totalDurationMs: message.totalDurationMs }
+          : {}),
         ...(message.status !== undefined ? { status: message.status } : {}),
       },
     ];

@@ -1,5 +1,5 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { smoothStream, streamText } from "ai";
+import { streamText } from "ai";
 import { appConfig } from "@/lib/appConfig";
 import { maybeHandleAIGenerateMock } from "@/lib/ai-generate-mock";
 import {
@@ -8,6 +8,11 @@ import {
   PRACTICE_INITIAL_USER_PROMPT,
 } from "@/lib/ai-generate-content";
 
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const maxDuration = 300;
+
 const appHeaders = {
   "HTTP-Referer": appConfig.baseUrl,
   "X-Title": appConfig.openrouterAI.appName,
@@ -15,8 +20,9 @@ const appHeaders = {
 
 const streamingHeaders = {
   "Content-Type": "text/plain; charset=utf-8",
-  "Cache-Control": "no-cache, no-transform",
+  "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate, no-transform",
   Connection: "keep-alive",
+  Pragma: "no-cache",
   "X-Accel-Buffering": "no",
 };
 
@@ -64,6 +70,15 @@ function createUpstreamAbortSignal(requestSignal: AbortSignal, timeoutMs: number
   } else {
     requestSignal.addEventListener("abort", forwardAbort, { once: true });
   }
+
+  controller.signal.addEventListener(
+    "abort",
+    () => {
+      clearTimeout(timeoutId);
+      requestSignal.removeEventListener("abort", forwardAbort);
+    },
+    { once: true },
+  );
 
   return controller.signal;
 }
@@ -133,7 +148,6 @@ export async function POST(request: Request) {
       messages: aiMessages,
       abortSignal,
       timeout: timeoutMs,
-      experimental_transform: smoothStream({ delayInMs: 20, chunking: "word" }),
     });
 
     return result.toTextStreamResponse({

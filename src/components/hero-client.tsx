@@ -47,6 +47,127 @@ const categories = [
   { id: "creative", label: "Improv", icon: Wand2, color: "text-purple-500", bg: "bg-purple-50" },
 ] as const;
 
+const DEBUG_ASSISTANT_STATUS_LABELS = {
+  streaming: "Streaming",
+  completed: "Completed",
+  stopped: "Stopped",
+  timeout: "Timed out",
+  request_aborted: "Aborted",
+  upstream_interrupted: "Interrupted",
+} as const;
+
+function formatDuration(durationMs?: number) {
+  if (typeof durationMs !== "number" || !Number.isFinite(durationMs) || durationMs < 0) {
+    return "--";
+  }
+
+  if (durationMs < 1000) {
+    return `${Math.round(durationMs)}ms`;
+  }
+
+  return `${(durationMs / 1000).toFixed(1)}s`;
+}
+
+function getAssistantDebugStatus(status?: Message["status"]) {
+  return status ? DEBUG_ASSISTANT_STATUS_LABELS[status] : "Completed";
+}
+
+function getAssistantDebugStatusClass(status?: Message["status"]) {
+  switch (status) {
+    case "completed":
+    case undefined:
+      return "text-emerald-600";
+    case "streaming":
+      return "text-amber-500";
+    case "stopped":
+    case "timeout":
+    case "request_aborted":
+    case "upstream_interrupted":
+      return "text-rose-500";
+    default:
+      return "text-gray-500";
+  }
+}
+
+function getAssistantStatusCopy(status?: Message["status"]) {
+  if (status === "stopped") {
+    return ASSISTANT_STATUS_COPY.stopped;
+  }
+
+  if (status === "timeout") {
+    return ASSISTANT_STATUS_COPY.timeout;
+  }
+
+  if (status === "request_aborted") {
+    return ASSISTANT_STATUS_COPY.requestAborted;
+  }
+
+  if (status === "upstream_interrupted") {
+    return ASSISTANT_STATUS_COPY.upstreamInterrupted;
+  }
+
+  return null;
+}
+
+function renderAssistantMeta(message: Message, isDebugEnabled: boolean) {
+  if (message.role !== "assistant") {
+    return null;
+  }
+
+  const isWaitingForFirstToken =
+    message.status === "streaming" &&
+    !message.content.trim() &&
+    message.firstTokenLatencyMs === undefined;
+
+  if (isWaitingForFirstToken) {
+    return (
+      <div className="mt-3 flex items-center gap-2.5 text-[11px] font-medium text-amber-500 sm:text-xs">
+        <div className="flex gap-1">
+          <div className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-bounce [animation-delay:-0.3s]" />
+          <div className="h-1.5 w-1.5 rounded-full bg-orange-400 animate-bounce [animation-delay:-0.15s]" />
+          <div className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-bounce" />
+        </div>
+        <span className="uppercase tracking-wider text-gray-400">AI is thinking</span>
+      </div>
+    );
+  }
+
+  if (isDebugEnabled) {
+    const firstTokenText =
+      message.status === "streaming" && message.firstTokenLatencyMs === undefined
+        ? "waiting..."
+        : formatDuration(message.firstTokenLatencyMs);
+
+    const totalDurationMs =
+      message.status === "streaming" && typeof message.requestedAt === "number"
+        ? Date.now() - message.requestedAt
+        : message.totalDurationMs;
+
+    return (
+      <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-medium text-gray-400 sm:text-xs">
+        <span>{`First token ${firstTokenText}`}</span>
+        <span aria-hidden="true" className="text-gray-300">·</span>
+        <span>{`Total ${formatDuration(totalDurationMs)}`}</span>
+        <span aria-hidden="true" className="text-gray-300">·</span>
+        <span className={getAssistantDebugStatusClass(message.status)}>
+          {getAssistantDebugStatus(message.status)}
+        </span>
+      </div>
+    );
+  }
+
+  const statusCopy = getAssistantStatusCopy(message.status);
+  if (!statusCopy) {
+    return null;
+  }
+
+  return (
+    <div className="mt-3 text-xs font-medium text-rose-500">
+      {statusCopy}
+    </div>
+  );
+}
+
 
 const TooltipTop = ({ children, text, className }: { children: React.ReactNode, text: string, className?: string }) => (
   <div className={`relative group/tooltip flex ${className || ''}`}>
@@ -120,6 +241,7 @@ export function HeroClient({
   const [currentSessionPinned, setCurrentSessionPinned] = useState(false);
   const [renamingSessionId, setRenamingSessionId] = useState<string | null>(null);
   const [renamingValue, setRenamingValue] = useState("");
+  const isOpenRouterDebug = appConfig.openrouterAI.debug;
 
   const abortActiveRequest = (reason: string = "user") => {
     requestAbortControllerRef.current?.abort(reason);
@@ -386,11 +508,18 @@ export function HeroClient({
     abortActiveRequest();
     setIsLocalLoading(true);
     const aiMessageId = Date.now().toString() + "-ai";
+    const requestStartedAt = Date.now();
     const abortController = new AbortController();
     requestAbortControllerRef.current = abortController;
     setLocalMessages(prev => [
       ...prev,
-      { id: aiMessageId, role: 'assistant', content: '', status: "streaming" },
+      {
+        id: aiMessageId,
+        role: 'assistant',
+        content: '',
+        status: "streaming",
+        requestedAt: requestStartedAt,
+      },
     ]);
 
     try {
@@ -431,21 +560,35 @@ export function HeroClient({
       const decoder = new TextDecoder();
       const mockStreamError = response.headers.get("X-AI-Stream-Error");
       let assistantMessage = "";
+      let firstTokenAt: number | undefined;
 
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
 
         if (value) {
+          if (firstTokenAt === undefined) {
+            firstTokenAt = Date.now();
+          }
+
           assistantMessage += decoder.decode(value, { stream: true });
 
           setLocalMessages(prev =>
-            prev.map(m => m.id === aiMessageId ? { ...m, content: assistantMessage, status: "streaming" } : m)
+            prev.map(m => m.id === aiMessageId ? {
+              ...m,
+              content: assistantMessage,
+              status: "streaming",
+              requestedAt: m.requestedAt ?? requestStartedAt,
+              firstTokenAt: m.firstTokenAt ?? firstTokenAt,
+              firstTokenLatencyMs:
+                m.firstTokenLatencyMs ?? (firstTokenAt - (m.requestedAt ?? requestStartedAt)),
+            } : m)
           );
         }
       }
 
       assistantMessage += decoder.decode();
+      const finishedAt = Date.now();
 
       setLocalMessages((prev) =>
         prev.map((message) => {
@@ -456,6 +599,8 @@ export function HeroClient({
           return {
             ...message,
             content: assistantMessage,
+            finishedAt,
+            totalDurationMs: finishedAt - (message.requestedAt ?? requestStartedAt),
             status:
               mockStreamError === "timeout"
                 ? "timeout"
@@ -469,6 +614,7 @@ export function HeroClient({
       );
     } catch (error) {
       if (abortController.signal.aborted) {
+      const finishedAt = Date.now();
       setLocalMessages((prev) =>
         prev.map((message) => {
           if (message.id !== aiMessageId) {
@@ -479,6 +625,8 @@ export function HeroClient({
           return {
             ...message,
             content: normalizedContent,
+            finishedAt,
+            totalDurationMs: finishedAt - (message.requestedAt ?? requestStartedAt),
             status:
               abortController.signal.reason === "user"
                 ? "stopped"
@@ -491,6 +639,7 @@ export function HeroClient({
       return;
     }
 
+      const finishedAt = Date.now();
       setLocalMessages((prev) =>
         prev.map((message) => {
           if (message.id !== aiMessageId) {
@@ -501,6 +650,8 @@ export function HeroClient({
           return {
             ...message,
             content: normalizedContent,
+            finishedAt,
+            totalDurationMs: finishedAt - (message.requestedAt ?? requestStartedAt),
             status:
               error instanceof Error && error.message === "timeout"
                 ? "timeout"
@@ -568,14 +719,15 @@ export function HeroClient({
   const canShowHistory = Boolean(isLoaded && isSignedIn);
 
   return (
-    <div className="relative flex h-[680px] w-full max-w-none flex-col overflow-hidden rounded-[2.5rem] border border-gray-200/60 bg-white/70 font-sans shadow-2xl shadow-rose-500/5 backdrop-blur-3xl">
+    <div className="relative flex h-[680px] w-full max-w-none flex-col overflow-hidden rounded-[2.5rem] border border-amber-100/80 bg-[linear-gradient(180deg,rgba(255,252,248,0.98),rgba(255,247,240,0.96))] font-sans shadow-2xl shadow-rose-500/10">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.12),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(244,114,182,0.10),transparent_28%)] pointer-events-none" />
       
       {/* Decorative Blur Orbs inside the box */}
-      <div className="absolute top-10 left-10 w-72 h-72 bg-rose-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-60 -z-10 animate-blob" />
-      <div className="absolute bottom-10 right-10 w-72 h-72 bg-orange-200/50 rounded-full mix-blend-multiply filter blur-[80px] opacity-60 -z-10 animate-blob animation-delay-2000" />
+      <div className="absolute top-10 left-10 w-72 h-72 bg-rose-200/45 rounded-full mix-blend-multiply filter blur-[80px] opacity-60 -z-10 animate-blob" />
+      <div className="absolute bottom-10 right-10 w-72 h-72 bg-orange-200/45 rounded-full mix-blend-multiply filter blur-[80px] opacity-60 -z-10 animate-blob animation-delay-2000" />
       
       {/* Header / Mode Switcher */}
-      <div className="flex p-3 bg-white/40 backdrop-blur-md border-b border-gray-100 z-10 items-center gap-2">
+      <div className="flex p-3 bg-white/75 border-b border-amber-100/80 z-10 items-center gap-2">
         <div className="flex flex-1 bg-gray-100/50 p-1 rounded-3xl">
           <button
             onClick={() => handleModeChange("idea")}
@@ -626,7 +778,7 @@ export function HeroClient({
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth z-10 relative flex flex-col">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth z-10 relative flex flex-col bg-[linear-gradient(180deg,rgba(255,255,255,0.22),rgba(255,248,242,0.12))]">
         
         {/* Empty State / Welcome for IDEA mode */}
         {visibleMessages.length === 0 && mode === "idea" && (
@@ -697,56 +849,23 @@ export function HeroClient({
               className={`max-w-[85%] px-5 sm:px-6 py-3.5 sm:py-4 text-[15px] sm:text-[16px] leading-relaxed whitespace-pre-wrap shadow-sm ${
                 m.role === "user"
                   ? "bg-linear-to-br from-orange-400 to-rose-400 text-white rounded-3xl rounded-tr-sm shadow-orange-500/20"
-                  : "bg-white/90 backdrop-blur-sm text-gray-700 rounded-3xl rounded-tl-sm border border-gray-100 shadow-gray-200/50"
+                  : "bg-white text-gray-700 rounded-3xl rounded-tl-sm border border-amber-100/70 shadow-[0_10px_30px_rgba(251,146,60,0.08)]"
               }`}
             >
               {m.content}
-              {m.role === "assistant" && m.status === "stopped" ? (
-                <div className="mt-3 text-xs font-medium text-rose-500">
-                  {ASSISTANT_STATUS_COPY.stopped}
-                </div>
-              ) : null}
-              {m.role === "assistant" && m.status === "timeout" ? (
-                <div className="mt-3 text-xs font-medium text-rose-500">
-                  {ASSISTANT_STATUS_COPY.timeout}
-                </div>
-              ) : null}
-              {m.role === "assistant" && m.status === "request_aborted" ? (
-                <div className="mt-3 text-xs font-medium text-rose-500">
-                  {ASSISTANT_STATUS_COPY.requestAborted}
-                </div>
-              ) : null}
-              {m.role === "assistant" && m.status === "upstream_interrupted" ? (
-                <div className="mt-3 text-xs font-medium text-rose-500">
-                  {ASSISTANT_STATUS_COPY.upstreamInterrupted}
-                </div>
-              ) : null}
+              {renderAssistantMeta(m, isOpenRouterDebug)}
             </div>
           </div>
         ))}
-
-        {/* Loading Indicator */}
-        {isLocalLoading && (
-           <div className="flex justify-start w-full animate-in fade-in slide-in-from-left-2 duration-300">
-             <div className="bg-white/80 backdrop-blur-sm rounded-3xl rounded-tl-sm px-6 py-4 border border-gray-100 flex items-center gap-3 shadow-sm shadow-rose-500/5">
-               <div className="flex gap-1">
-                 <div className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                 <div className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                 <div className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce"></div>
-               </div>
-               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">AI is thinking</span>
-             </div>
-           </div>
-        )}
         <div ref={messagesEndRef} className="h-4" />
       </div>
 
       {/* Input Form */}
       {!(mode === "practice" && !category && localMessages.length === 0) && (
-        <div className="p-3 sm:p-4 bg-white/60 backdrop-blur-xl border-t border-gray-100 z-10">
+        <div className="p-3 sm:p-4 bg-white/80 border-t border-amber-100/80 z-10">
           <form
             onSubmit={handleCustomSubmit}
-            className="bg-white rounded-3xl p-1.5 sm:p-2 border border-gray-200 focus-within:border-orange-300 focus-within:ring-4 focus-within:ring-orange-100/50 transition-all shadow-sm"
+            className="bg-white rounded-3xl p-1.5 sm:p-2 border border-amber-100/80 focus-within:border-orange-300 focus-within:ring-4 focus-within:ring-orange-100/50 transition-all shadow-[0_8px_24px_rgba(251,146,60,0.08)]"
           >
             <textarea
              className="w-full bg-transparent border-none outline-none text-[15px] sm:text-[16px] text-gray-800 px-3 sm:px-4 pt-3 sm:pt-3.5 pb-1.5 sm:pb-2 placeholder:text-gray-400 resize-none min-h-[44px] sm:min-h-[48px] max-h-[160px] sm:max-h-[190px]"

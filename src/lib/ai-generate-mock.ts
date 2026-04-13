@@ -6,8 +6,9 @@ import {
 
 const streamingHeaders = {
   "Content-Type": "text/plain; charset=utf-8",
-  "Cache-Control": "no-cache, no-transform",
+  "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate, no-transform",
   Connection: "keep-alive",
+  Pragma: "no-cache",
   "X-Accel-Buffering": "no",
 };
 

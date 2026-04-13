@@ -12,6 +12,11 @@ export type Message = {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
+  requestedAt?: number;
+  firstTokenAt?: number;
+  finishedAt?: number;
+  firstTokenLatencyMs?: number;
+  totalDurationMs?: number;
   status?:
     | "streaming"
     | "completed"

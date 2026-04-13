@@ -41,9 +41,13 @@
 
 ## 真实模型流
 
-通过 AI SDK provider 调 OpenRouter 时，可以使用 `streamText()`，并通过 `toTextStreamResponse()` 返回纯文本流：
+通过 AI SDK provider 调 OpenRouter 时，route 应尽量保持为最薄的一层透传，直接使用 `streamText()` 和 `toTextStreamResponse()` 返回纯文本流。对 Vercel 来说，推荐显式使用 `Edge Runtime`，并关闭缓存：
 
 ```ts
+export const runtime = "edge";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const result = streamText({
   model: openrouter.chat(modelName, {
     extraBody: sessionId ? { session_id: sessionId } : undefined,
@@ -51,13 +55,12 @@ const result = streamText({
   messages,
   abortSignal,
   timeout,
-  experimental_transform: smoothStream({ delayInMs: 20, chunking: "word" }),
 });
 
 return result.toTextStreamResponse({ headers: streamingHeaders });
 ```
 
-`smoothStream()` 不是流式正确性的必要条件，但能改善用户感知。有些模型或供应商会返回较大的 chunk，前端会表现成“一块一块地跳”。使用 smoothing transform 后，即使上游 chunk 粒度不稳定，UI 也能更稳定地呈现打字机效果。
+如果目标是最小化首 token 延迟并减少线上缓冲风险，不应在服务端再追加 `smoothStream()` 之类的二次 transform。上游返回什么 chunk，就尽快把什么 chunk 继续透传给浏览器。
 
 ## 前端流式消费
 
@@ -179,7 +182,7 @@ controller.abort("user");
 
 ## 超时处理
 
-超时应该由应用显式控制，不应只依赖平台默认超时。
+超时应该由应用显式控制，但不要把应用超时设置得过于接近平台上限，也不要短到误杀正常的长回复。
 
 服务端可以创建一个 timeout signal，并传给 `streamText()`：
 
@@ -197,7 +200,7 @@ const result = streamText({
 
 当确认是应用自己的 timeout 触发时，应返回或暴露结构化错误原因，例如 `timeout`。前端再据此把 assistant 消息状态设置为 `timeout`。
 
-和普通网络中断相比，timeout 更容易被可靠分类，因为它是应用自己创建和控制的信号。
+对流式输出场景，应用超时更适合作为兜底保护，而不是主限流手段。实践上，应用超时应明显长于常见模型首 token 时间和正常回答时长，否则容易出现“平台允许继续执行，但应用在 30 秒左右主动 abort”的假超时。
 
 ## Request Abort 与 Upstream Interruption
 
