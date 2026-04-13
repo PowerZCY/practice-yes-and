@@ -570,6 +570,7 @@ export function HeroClient({
           if (firstTokenAt === undefined) {
             firstTokenAt = Date.now();
           }
+          const currentFirstTokenAt = firstTokenAt;
 
           assistantMessage += decoder.decode(value, { stream: true });
 
@@ -579,9 +580,9 @@ export function HeroClient({
               content: assistantMessage,
               status: "streaming",
               requestedAt: m.requestedAt ?? requestStartedAt,
-              firstTokenAt: m.firstTokenAt ?? firstTokenAt,
+              firstTokenAt: m.firstTokenAt ?? currentFirstTokenAt,
               firstTokenLatencyMs:
-                m.firstTokenLatencyMs ?? (firstTokenAt - (m.requestedAt ?? requestStartedAt)),
+                m.firstTokenLatencyMs ?? (currentFirstTokenAt - (m.requestedAt ?? requestStartedAt)),
             } : m)
           );
         }
