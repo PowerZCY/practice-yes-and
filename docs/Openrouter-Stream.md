@@ -1,6 +1,6 @@
 # OpenRouter 流式响应设计
 
-本文档描述一套通用的 OpenRouter 流式 AI 响应设计，重点包括前端流式消费、消息状态设计、超时与中断处理、Mock 设计、多轮上下文，以及主功能文案与核心逻辑的分离。
+本文档描述当前项目里 OpenRouter 流式 AI 响应设计，重点包括前端流式消费、消息状态设计、OpenRouter 状态码语义、超时与中断处理、Mock 设计、多轮上下文，以及主功能文案与核心逻辑的分离。
 
 本文档不讨论消息落库。消息是否持久化，是应用层策略，不属于这里的通用流式响应设计。
 
@@ -10,9 +10,10 @@
 - 前端能够按 chunk 增量渲染，形成类似打字机的输出效果。
 - 本地开发可以通过 mock 流测试，不必真实调用模型。
 - 用户主动停止生成时，需要有明确的取消路径。
-- 超时、中断、上游异常等情况不能污染消息 `content`。
+- 超时、中断、上游异常等情况不能污染模型上下文。
 - 提示词、mock 文本、状态文案等主功能文本应与 route/control-flow 逻辑分离。
 - 多轮对话应显式携带上下文，不依赖 provider 的隐式记忆假设。
+- 失败消息正文应优先展示 OpenRouter/模型返回的原始可读错误信息，而不是前端兜底文案。
 
 ## 端到端流式链路
 
@@ -41,7 +42,7 @@
 
 ## 真实模型流
 
-通过 AI SDK provider 调 OpenRouter 时，route 应尽量保持为最薄的一层透传，直接使用 `streamText()` 和 `toTextStreamResponse()` 返回纯文本流。对 Vercel 来说，推荐显式使用 `Edge Runtime`，并关闭缓存：
+通过 AI SDK provider 调 OpenRouter 时，route 应尽量保持为薄的一层调用层。对 Vercel 来说，推荐显式使用 `Edge Runtime`，并关闭缓存：
 
 ```ts
 export const runtime = "edge";
@@ -57,10 +58,18 @@ const result = streamText({
   timeout,
 });
 
-return result.toTextStreamResponse({ headers: streamingHeaders });
+return await createGuardedTextStreamResponse(result.fullStream);
 ```
 
-如果目标是最小化首 token 延迟并减少线上缓冲风险，不应在服务端再追加 `smoothStream()` 之类的二次 transform。上游返回什么 chunk，就尽快把什么 chunk 继续透传给浏览器。
+当前项目不再直接使用 `result.toTextStreamResponse()`，而是先消费 `fullStream` 的起始事件：
+
+- 如果先收到 `error` part，则直接返回结构化错误 JSON 和真实 HTTP status。
+- 如果先收到 `text-delta`，则开始向前端透传纯文本 chunk。
+- 只有在既没有 `error`、也没有文本输出时，才判为 `empty_response`。
+
+这样做的原因是：OpenRouter 某些失败并不会在 `textStream` 上直接抛错，而是通过 `fullStream` 的 `error` 事件暴露。若只检查 `textStream`，可能把真实的 `403`、`429` 等错误误判成空响应。
+
+如果目标是最小化首 token 延迟并减少线上缓冲风险，不应在服务端再追加 `smoothStream()` 之类的二次 transform。上游返回什么文本 chunk，就尽快把什么文本 chunk 继续透传给浏览器。
 
 ## 前端流式消费
 
@@ -100,9 +109,9 @@ updateAssistantMessage({ content: assistantMessage, status: "completed" });
 
 ## 消息状态设计
 
-消息 `content` 只应该保存模型可见的对话文本。运行状态、错误状态、停止状态都应该放到独立字段里。
+消息 `content` 只应该保存真正展示给用户的正文文本。对失败场景，正文优先使用 OpenRouter/模型返回的 `error.message`，例如 `This model is not available in your region.`。运行状态、失败原因和 HTTP 状态都应该放到独立字段里。
 
-推荐的 assistant 消息状态：
+当前项目的 assistant 消息结构：
 
 ```ts
 type MessageStatus =
@@ -111,7 +120,28 @@ type MessageStatus =
   | "stopped"
   | "timeout"
   | "request_aborted"
-  | "upstream_interrupted";
+  | "failed";
+
+type MessageFailureReason =
+  | "invalid_request"
+  | "auth_error"
+  | "insufficient_credits"
+  | "model_access_denied"
+  | "content_blocked"
+  | "rate_limited"
+  | "provider_error"
+  | "no_provider_available"
+  | "empty_response"
+  | "stream_error"
+  | "unknown";
+
+type Message = {
+  content: string;
+  status?: MessageStatus;
+  failureReason?: MessageFailureReason;
+  errorMessage?: string;
+  upstreamStatusCode?: number;
+};
 ```
 
 各状态含义：
@@ -126,10 +156,35 @@ type MessageStatus =
   应用自己控制的超时触发了。
 - `request_aborted`
   当前请求在完成前被 abort。这个状态不应过度承诺为“用户客户端主动断开”，因为它也可能来自运行时、代理、路由取消等。
-- `upstream_interrupted`
-  上游模型流或网络路径在完成前异常中断。这是一个兜底分类，不是精确根因诊断。
+- `failed`
+  调用链以失败收尾，但不属于超时、用户停止或 request abort。真实失败原因看 `failureReason`。
 
-不要把 `[Generation stopped]` 这类状态文本拼进 `content`。一旦拼进 `content`，后续多轮对话再次把历史消息发给模型时，就会污染模型上下文。正确做法是在 UI 层根据 `status` 单独渲染状态文案。
+失败原因含义：
+
+- `invalid_request`
+  请求体无效、参数不合法、上下文不支持等应用侧问题。
+- `auth_error`
+  API key 无效、被禁用或认证失败。
+- `insufficient_credits`
+  账户额度不足。
+- `model_access_denied`
+  模型权限、地域、策略、账户范围等限制导致模型不可用。
+- `content_blocked`
+  请求被审核/策略拒绝。
+- `rate_limited`
+  达到频率限制。
+- `provider_error`
+  上游 provider 故障、响应无效或网关错误。
+- `no_provider_available`
+  当前 routing requirements 下没有可用 provider。
+- `empty_response`
+  没有文本输出，也没有明确错误事件，视为异常空响应。
+- `stream_error`
+  流已经开始或进入流阶段后异常结束。
+- `unknown`
+  无法精确归类的未知失败。
+
+不要把 `[Generation stopped]` 这类状态文本拼进 `content`。但失败场景的原始错误文本可以放进 `content`，因为它本来就应该展示给用户；同时不要把这些失败消息再次发给模型作为对话上下文。
 
 状态文案示例：
 
@@ -139,10 +194,42 @@ const ASSISTANT_STATUS_COPY = {
   timeout: "Generation timed out before completion.",
   requestAborted:
     "Generation stopped because the request was aborted before completion.",
-  upstreamInterrupted:
-    "Generation stopped before completion because the upstream stream was interrupted.",
+  failed: "Generation failed before completion.",
 };
 ```
+
+debug 模式下，失败状态建议显示为：
+
+```text
+Failed(model_access_denied)
+Failed(rate_limited)
+Failed(empty_response)
+```
+
+普通模式下，正文展示 `content`，即优先展示 OpenRouter/模型原始错误文本。
+
+## OpenRouter 状态码对照
+
+以下状态码是当前业务侧需要重点关注的对照表：
+
+| HTTP 状态码 | OpenRouter/上游语义 | 当前业务状态 | failureReason | 备注 |
+| --- | --- | --- | --- | --- |
+| `400` | 请求参数错误、请求体不合法、上下文不支持等 | `failed` | `invalid_request` | 通常是应用或调用参数问题 |
+| `401` | API key 无效、认证失败、key 被禁用 | `failed` | `auth_error` | 属于配置或运维问题 |
+| `402` | 额度不足 | `failed` | `insufficient_credits` | 需要单独监控 |
+| `403` | 模型不可用、地域限制、权限限制、审核拒绝 | `failed` | `model_access_denied` 或 `content_blocked` | 应优先依据 OpenRouter 返回的 `error.message` 判断 |
+| `408` | 请求超时 | `timeout` | 无 | 这是应用层显式超时状态 |
+| `429` | 频率限制 | `failed` | `rate_limited` | 适合做退避或重试策略 |
+| `499` | request aborted | `request_aborted` | 无 | 非 OpenRouter 标准码，是应用侧表示请求链路提前结束 |
+| `502` | provider 故障、无效响应、网关错误 | `failed` | `provider_error` | 不应和空响应混淆 |
+| `503` | 当前 routing requirements 下无可用 provider | `failed` | `no_provider_available` | 常见于 provider routing 或模型暂不可用 |
+
+补充说明：
+
+- `403` 是本次设计里最需要单独对待的状态之一。它不应被泛化成普通 stream interruption。
+- `403` 的最终展示文案应优先使用 OpenRouter 返回的 `error.message`，例如 `This model is not available in your region.`。
+- 如果 OpenRouter 通过流式 `error` event 暴露错误，而不是直接返回非 2xx 文本响应，服务端也应优先还原真实 HTTP status 和错误 message。
+- `empty_response` 只应作为兜底分类，而不应吞掉已有的真实上游错误。
 
 ## 主动中断处理
 
@@ -202,7 +289,7 @@ const result = streamText({
 
 对流式输出场景，应用超时更适合作为兜底保护，而不是主限流手段。实践上，应用超时应明显长于常见模型首 token 时间和正常回答时长，否则容易出现“平台允许继续执行，但应用在 30 秒左右主动 abort”的假超时。
 
-## Request Abort 与 Upstream Interruption
+## Request Abort 与 Stream Error
 
 不是所有中断都能精确判断根因。
 
@@ -211,8 +298,8 @@ const result = streamText({
 - `request_aborted`
   服务端 request signal 被 abort。它表示当前请求链路提前结束，但不一定表示终端用户主动取消。可能来源包括浏览器导航、运行时取消、代理取消、平台回收或其他基础设施行为。
 
-- `upstream_interrupted`
-  模型流未正常完成，并且没有更精确的原因可用。它可能来自 OpenRouter、底层模型供应商、网络路径或代理层。它适合作为工程分类，不适合当作精确根因。
+- `stream_error`
+  模型流未正常完成，并且当前只能确定错误发生在流阶段。它适合作为工程分类，不适合当作精确根因。
 
 除非系统能证明一定是客户端造成，否则不要命名为 `client_aborted`。
 

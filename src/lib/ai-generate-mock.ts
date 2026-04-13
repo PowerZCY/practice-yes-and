@@ -3,6 +3,7 @@ import {
   AI_GENERATE_ERROR_MESSAGES,
   createMockTextByContext,
 } from "@/lib/ai-generate-content";
+import { createAIErrorPayload } from "@/lib/ai-generate-error";
 
 const streamingHeaders = {
   "Content-Type": "text/plain; charset=utf-8",
@@ -10,9 +11,9 @@ const streamingHeaders = {
   Connection: "keep-alive",
   Pragma: "no-cache",
   "X-Accel-Buffering": "no",
-};
+} as const;
 
-type MockFailureType = "timeout" | "request_aborted" | "upstream_interrupted";
+type MockFailureType = "timeout" | "request_aborted" | "stream_error";
 
 type MockScenario = {
   initialDelayMs?: number;
@@ -43,7 +44,7 @@ function getMockScenario(mockType: number): MockScenario {
       };
     case 5:
       return {
-        streamFailureType: "upstream_interrupted",
+        streamFailureType: "stream_error",
         streamFailureAfterChunks: 3,
       };
     default:
@@ -57,19 +58,32 @@ async function sleep(delayInMs: number) {
 
 function createMockFailureResponse(failureType: MockFailureType) {
   if (failureType === "timeout") {
-    return Response.json({ error: AI_GENERATE_ERROR_MESSAGES.timeout }, { status: 408 });
+    return Response.json(
+      createAIErrorPayload({
+        message: AI_GENERATE_ERROR_MESSAGES.timeout,
+        upstreamStatusCode: 408,
+      }),
+      { status: 408 },
+    );
   }
 
   if (failureType === "request_aborted") {
     return Response.json(
-      { error: AI_GENERATE_ERROR_MESSAGES.requestAborted },
+      createAIErrorPayload({
+        message: AI_GENERATE_ERROR_MESSAGES.requestAborted,
+        upstreamStatusCode: 499,
+      }),
       { status: 499 },
     );
   }
 
   return Response.json(
-    { error: AI_GENERATE_ERROR_MESSAGES.errorCommunicatingWithAI },
-    { status: 500 },
+    createAIErrorPayload({
+      message: AI_GENERATE_ERROR_MESSAGES.errorCommunicatingWithAI,
+      upstreamStatusCode: 502,
+      failureReason: "stream_error",
+    }),
+    { status: 502 },
   );
 }
 
@@ -112,12 +126,12 @@ function createMockStreamResponse(
   });
 
   return new Response(stream, {
-    headers: {
-      ...streamingHeaders,
-      ...(streamFailureType && streamFailureAfterChunks > 0
-        ? { "X-AI-Stream-Error": streamFailureType }
-        : {}),
-    },
+      headers: {
+        ...streamingHeaders,
+        ...(streamFailureType && streamFailureAfterChunks > 0
+          ? { "X-AI-Stream-Error": streamFailureType }
+          : {}),
+      },
   });
 }
 

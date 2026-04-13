@@ -8,6 +8,7 @@ export const AI_GENERATE_ERROR_MESSAGES = {
   timeout: "timeout",
   requestAborted: "request_aborted",
   errorCommunicatingWithAI: "Error communicating with AI",
+  emptyAIResponse: "AI returned an empty response",
 } as const;
 
 const PRACTICE_SCENARIO_CONTEXTS = {
@@ -29,8 +30,7 @@ export const ASSISTANT_STATUS_COPY = {
   timeout: "Generation timed out before completion.",
   requestAborted:
     "Generation stopped because the request was aborted before completion.",
-  upstreamInterrupted:
-    "Generation stopped before completion because the upstream stream was interrupted.",
+  failed: "Generation failed before completion.",
 } as const;
 
 export function createMockTextByContext(

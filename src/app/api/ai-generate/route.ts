@@ -1,6 +1,10 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { streamText } from "ai";
 import { appConfig } from "@/lib/appConfig";
+import {
+  createAIErrorPayload,
+  normalizeAIError,
+} from "@/lib/ai-generate-error";
 import { maybeHandleAIGenerateMock } from "@/lib/ai-generate-mock";
 import {
   AI_GENERATE_ERROR_MESSAGES,
@@ -50,12 +54,6 @@ function normalizeMessages(messages: GenerateBody["messages"], systemPrompt: str
   return aiMessages;
 }
 
-function isAbortError(error: unknown) {
-  return (
-    error instanceof DOMException && error.name === "AbortError"
-  );
-}
-
 function createUpstreamAbortSignal(requestSignal: AbortSignal, timeoutMs: number) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort("timeout"), timeoutMs);
@@ -81,6 +79,90 @@ function createUpstreamAbortSignal(requestSignal: AbortSignal, timeoutMs: number
   );
 
   return controller.signal;
+}
+
+async function createGuardedTextStreamResponse(
+  fullStream: AsyncIterable<{
+    type: string;
+    text?: string;
+    error?: unknown;
+  }>,
+) {
+  const iterator = fullStream[Symbol.asyncIterator]();
+  let firstChunk: IteratorResult<{
+    type: string;
+    text?: string;
+    error?: unknown;
+  }>;
+
+  try {
+    while (true) {
+      firstChunk = await iterator.next();
+      if (firstChunk.done) {
+        break;
+      }
+
+      if (firstChunk.value.type === "error") {
+        const aiError = normalizeAIError(firstChunk.value.error);
+        return Response.json(aiError, { status: aiError.upstreamStatusCode ?? 500 });
+      }
+
+      if (firstChunk.value.type === "text-delta") {
+        break;
+      }
+    }
+  } catch (error) {
+    console.error("[AI-Stream-Start-Error]", error);
+    const aiError = normalizeAIError(error);
+    return Response.json(aiError, { status: aiError.upstreamStatusCode ?? 500 });
+  }
+
+  if (firstChunk.done) {
+    const aiError = createAIErrorPayload({
+      message: AI_GENERATE_ERROR_MESSAGES.emptyAIResponse,
+      upstreamStatusCode: 502,
+      failureReason: "empty_response",
+    });
+    return Response.json(aiError, { status: aiError.upstreamStatusCode });
+  }
+
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      if (!firstChunk.done && firstChunk.value.type === "text-delta" && firstChunk.value.text) {
+        controller.enqueue(encoder.encode(firstChunk.value.text));
+      }
+
+      try {
+        while (true) {
+          const nextChunk = await iterator.next();
+          if (nextChunk.done) {
+            break;
+          }
+
+          if (nextChunk.value.type === "error") {
+            throw nextChunk.value.error;
+          }
+
+          if (nextChunk.value.type === "text-delta" && nextChunk.value.text) {
+            controller.enqueue(encoder.encode(nextChunk.value.text));
+          }
+        }
+
+        controller.close();
+      } catch (error) {
+        console.error("[AI-Stream-Error]", error);
+        controller.error(error);
+      }
+    },
+    async cancel() {
+      await iterator.return?.();
+    },
+  });
+
+  return new Response(stream, {
+    headers: streamingHeaders,
+  });
 }
 
 // POST: 文本生成 (Streaming)
@@ -150,28 +232,22 @@ export async function POST(request: Request) {
       timeout: timeoutMs,
     });
 
-    return result.toTextStreamResponse({
-      headers: streamingHeaders,
-    });
+    return await createGuardedTextStreamResponse(result.fullStream);
   } catch (error) {
     console.error("[AI-Error]", error);
 
     if (request.signal.aborted) {
-      const reason =
-        request.signal.reason === "timeout"
-          ? AI_GENERATE_ERROR_MESSAGES.timeout
-          : AI_GENERATE_ERROR_MESSAGES.requestAborted;
-      return Response.json({ error: reason }, { status: 499 });
+      const aiError = createAIErrorPayload({
+        message:
+          request.signal.reason === "timeout"
+            ? AI_GENERATE_ERROR_MESSAGES.timeout
+            : AI_GENERATE_ERROR_MESSAGES.requestAborted,
+        upstreamStatusCode: 499,
+      });
+      return Response.json(aiError, { status: 499 });
     }
 
-    if (isAbortError(error)) {
-      return Response.json({ error: AI_GENERATE_ERROR_MESSAGES.timeout }, { status: 408 });
-    }
-
-    const message =
-      error instanceof Error
-        ? error.message
-        : AI_GENERATE_ERROR_MESSAGES.errorCommunicatingWithAI;
-    return Response.json({ error: message }, { status: 500 });
+    const aiError = normalizeAIError(error);
+    return Response.json(aiError, { status: aiError.upstreamStatusCode ?? 500 });
   }
 }

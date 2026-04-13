@@ -1,3 +1,5 @@
+import type { AIMessageFailureReason, AIMessageStatus } from "@/lib/ai-message-status";
+
 export type Mode = "idea" | "practice";
 
 export type PracticeCategory =
@@ -17,13 +19,10 @@ export type Message = {
   finishedAt?: number;
   firstTokenLatencyMs?: number;
   totalDurationMs?: number;
-  status?:
-    | "streaming"
-    | "completed"
-    | "stopped"
-    | "timeout"
-    | "request_aborted"
-    | "upstream_interrupted";
+  status?: AIMessageStatus;
+  failureReason?: AIMessageFailureReason;
+  errorMessage?: string;
+  upstreamStatusCode?: number;
 };
 
 export type Session = {

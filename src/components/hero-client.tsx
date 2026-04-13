@@ -38,6 +38,10 @@ import {
   ASSISTANT_STATUS_COPY,
   PRACTICE_INITIAL_USER_PROMPT,
 } from "@/lib/ai-generate-content";
+import {
+  type AIErrorPayload,
+  type AIMessageFailureReason,
+} from "@/lib/ai-message-status";
 
 const categories = [
   { id: "parenting", label: "Parent-Child", icon: Baby, color: "text-rose-500", bg: "bg-rose-50" },
@@ -53,7 +57,7 @@ const DEBUG_ASSISTANT_STATUS_LABELS = {
   stopped: "Stopped",
   timeout: "Timed out",
   request_aborted: "Aborted",
-  upstream_interrupted: "Interrupted",
+  failed: "Failed",
 } as const;
 
 function formatDuration(durationMs?: number) {
@@ -68,8 +72,17 @@ function formatDuration(durationMs?: number) {
   return `${(durationMs / 1000).toFixed(1)}s`;
 }
 
-function getAssistantDebugStatus(status?: Message["status"]) {
-  return status ? DEBUG_ASSISTANT_STATUS_LABELS[status] : "Completed";
+function getAssistantDebugStatus(message: Message) {
+  if (!message.status) {
+    return "Completed";
+  }
+
+  const baseStatusLabel = DEBUG_ASSISTANT_STATUS_LABELS[message.status];
+  if (message.status === "failed" && message.failureReason) {
+    return `${baseStatusLabel}(${message.failureReason})`;
+  }
+
+  return baseStatusLabel;
 }
 
 function getAssistantDebugStatusClass(status?: Message["status"]) {
@@ -82,7 +95,7 @@ function getAssistantDebugStatusClass(status?: Message["status"]) {
     case "stopped":
     case "timeout":
     case "request_aborted":
-    case "upstream_interrupted":
+    case "failed":
       return "text-rose-500";
     default:
       return "text-gray-500";
@@ -102,11 +115,36 @@ function getAssistantStatusCopy(status?: Message["status"]) {
     return ASSISTANT_STATUS_COPY.requestAborted;
   }
 
-  if (status === "upstream_interrupted") {
-    return ASSISTANT_STATUS_COPY.upstreamInterrupted;
+  if (status === "failed") {
+    return ASSISTANT_STATUS_COPY.failed;
   }
 
   return null;
+}
+
+function getFailureMessage(payload?: Partial<AIErrorPayload>) {
+  return payload?.error?.trim() || "Error communicating with AI";
+}
+
+function getFailureReason(payload?: Partial<AIErrorPayload>): AIMessageFailureReason | undefined {
+  return payload?.failureReason;
+}
+
+function getTerminalErrorStatus(
+  payload?: Partial<AIErrorPayload>,
+): Exclude<Message["status"], "streaming" | undefined> {
+  return payload?.status === "timeout" || payload?.status === "request_aborted"
+    ? payload.status
+    : "failed";
+}
+
+async function getApiErrorMessage(response: Response) {
+  try {
+    const errorBody = (await response.json()) as { error?: string };
+    return errorBody.error?.trim() || response.statusText || "Request failed";
+  } catch {
+    return response.statusText || "Request failed";
+  }
 }
 
 function renderAssistantMeta(message: Message, isDebugEnabled: boolean) {
@@ -150,7 +188,7 @@ function renderAssistantMeta(message: Message, isDebugEnabled: boolean) {
         <span>{`Total ${formatDuration(totalDurationMs)}`}</span>
         <span aria-hidden="true" className="text-gray-300">·</span>
         <span className={getAssistantDebugStatusClass(message.status)}>
-          {getAssistantDebugStatus(message.status)}
+          {getAssistantDebugStatus(message)}
         </span>
       </div>
     );
@@ -304,7 +342,7 @@ export function HeroClient({
       try {
         const response = await fetch("/api/chat-sessions", { cache: "no-store" });
         if (!response.ok) {
-          throw new Error(response.statusText);
+          throw new Error(await getApiErrorMessage(response));
         }
 
         const data = (await response.json()) as { sessions?: Session[] };
@@ -361,7 +399,7 @@ export function HeroClient({
         });
 
         if (!response.ok) {
-          throw new Error(response.statusText);
+          throw new Error(await getApiErrorMessage(response));
         }
       } catch (error) {
         console.error("Failed to persist chat session", error);
@@ -424,7 +462,7 @@ export function HeroClient({
     });
 
     if (!response.ok) {
-      throw new Error(response.statusText);
+      throw new Error(await getApiErrorMessage(response));
     }
   };
 
@@ -522,6 +560,37 @@ export function HeroClient({
       },
     ]);
 
+    const finishAssistantMessage = (
+      content: string,
+      status: Exclude<Message["status"], "streaming" | undefined>,
+      options?: {
+        errorMessage?: string;
+        failureReason?: Message["failureReason"];
+        upstreamStatusCode?: number;
+      },
+    ) => {
+      const finishedAt = Date.now();
+
+      setLocalMessages((prev) =>
+        prev.map((message) => {
+          if (message.id !== aiMessageId) {
+            return message;
+          }
+
+          return {
+            ...message,
+            content: content.trim(),
+            finishedAt,
+            totalDurationMs: finishedAt - (message.requestedAt ?? requestStartedAt),
+            status,
+            errorMessage: options?.errorMessage,
+            failureReason: status === "failed" ? options?.failureReason : undefined,
+            upstreamStatusCode: options?.upstreamStatusCode,
+          };
+        }),
+      );
+    };
+
     try {
       const requestMessages = buildConversationWindow(
         currentMessages,
@@ -541,20 +610,30 @@ export function HeroClient({
       });
 
       if (!response.ok) {
-        let responseError = "";
+        let errorBody: Partial<AIErrorPayload> | undefined;
 
         try {
-          const errorBody = (await response.json()) as { error?: string };
-          responseError = errorBody.error || "";
+          errorBody = (await response.json()) as Partial<AIErrorPayload>;
         } catch {
-          responseError = "";
+          errorBody = undefined;
         }
 
-        const error = new Error(responseError || response.statusText);
-        error.name = "AIRequestError";
-        throw error;
+        const errorMessage = getFailureMessage(errorBody);
+        finishAssistantMessage(errorMessage, getTerminalErrorStatus(errorBody), {
+          errorMessage,
+          failureReason: getFailureReason(errorBody),
+          upstreamStatusCode: errorBody?.upstreamStatusCode ?? response.status,
+        });
+        return;
       }
-      if (!response.body) throw new Error("No response body");
+      if (!response.body) {
+        finishAssistantMessage("No response body", "failed", {
+          errorMessage: "No response body",
+          failureReason: "empty_response",
+          upstreamStatusCode: response.status || 200,
+        });
+        return;
+      }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -607,15 +686,29 @@ export function HeroClient({
                 ? "timeout"
                 : mockStreamError === "request_aborted"
                   ? "request_aborted"
-                  : mockStreamError === "upstream_interrupted"
-                    ? "upstream_interrupted"
+                  : mockStreamError === "stream_error"
+                    ? "failed"
                     : "completed",
+            failureReason: mockStreamError === "stream_error" ? "stream_error" : undefined,
+            errorMessage:
+              mockStreamError === "stream_error"
+                ? "Generation failed before completion."
+                : undefined,
           };
         }),
       );
     } catch (error) {
       if (abortController.signal.aborted) {
-      const finishedAt = Date.now();
+        const abortStatus =
+          abortController.signal.reason === "user"
+            ? "stopped"
+            : abortController.signal.reason === "timeout"
+              ? "timeout"
+              : "request_aborted";
+        finishAssistantMessage("", abortStatus);
+        return;
+      }
+
       setLocalMessages((prev) =>
         prev.map((message) => {
           if (message.id !== aiMessageId) {
@@ -623,34 +716,18 @@ export function HeroClient({
           }
 
           const normalizedContent = message.content.trim();
+          const errorContent =
+            normalizedContent ||
+            (error instanceof Error &&
+            error.message !== "timeout" &&
+            error.message !== "request_aborted"
+              ? error.message
+              : "Error communicating with AI");
+          const finishedAt = Date.now();
+
           return {
             ...message,
-            content: normalizedContent,
-            finishedAt,
-            totalDurationMs: finishedAt - (message.requestedAt ?? requestStartedAt),
-            status:
-              abortController.signal.reason === "user"
-                ? "stopped"
-                : abortController.signal.reason === "timeout"
-                  ? "timeout"
-                  : "request_aborted",
-          };
-        }),
-      );
-      return;
-    }
-
-      const finishedAt = Date.now();
-      setLocalMessages((prev) =>
-        prev.map((message) => {
-          if (message.id !== aiMessageId) {
-            return message;
-          }
-
-          const normalizedContent = message.content.trim();
-          return {
-            ...message,
-            content: normalizedContent,
+            content: errorContent,
             finishedAt,
             totalDurationMs: finishedAt - (message.requestedAt ?? requestStartedAt),
             status:
@@ -658,7 +735,14 @@ export function HeroClient({
                 ? "timeout"
                 : error instanceof Error && error.message === "request_aborted"
                   ? "request_aborted"
-                  : "upstream_interrupted",
+                  : "failed",
+            failureReason:
+              error instanceof Error &&
+              error.message !== "timeout" &&
+              error.message !== "request_aborted"
+                ? "stream_error"
+                : undefined,
+            errorMessage: errorContent,
           };
         }),
       );

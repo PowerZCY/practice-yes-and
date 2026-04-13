@@ -29,7 +29,21 @@ type Message = {
     | "stopped"
     | "timeout"
     | "request_aborted"
-    | "upstream_interrupted";
+    | "failed";
+  failureReason?:
+    | "invalid_request"
+    | "auth_error"
+    | "insufficient_credits"
+    | "model_access_denied"
+    | "content_blocked"
+    | "rate_limited"
+    | "provider_error"
+    | "no_provider_available"
+    | "empty_response"
+    | "stream_error"
+    | "unknown";
+  errorMessage?: string;
+  upstreamStatusCode?: number;
 };
 ```
 
@@ -232,11 +246,15 @@ model ChatSession {
 - `assistant` 消息
 - `system` 消息
 - 每条消息的 `status`
+- 失败消息的 `failureReason`
+- 失败消息的 `errorMessage`
+- 上游失败时的 `upstreamStatusCode`
 
 因为当前前端会在流式输出过程中持续更新 `localMessages`，所以数据库也可能短暂保存到：
 
 - `status: "streaming"` 的 assistant 消息
 - 尚未生成完成的 partial content
+- `status: "failed"` 且带有 `failureReason/errorMessage/upstreamStatusCode` 的失败消息
 
 这属于当前实现的自然结果，不是额外的异步补写逻辑。
 

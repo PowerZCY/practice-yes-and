@@ -10,6 +10,10 @@ import {
   extractFingerprintFromNextStores,
 } from "@windrun-huaiin/third-ui/fingerprint/server";
 import type { Message, Mode, PracticeCategory, Session } from "@/lib/chatSession";
+import {
+  isAIMessageFailureReason,
+  isAIMessageStatus,
+} from "@/lib/ai-message-status";
 
 type SessionPayload = {
   id: string;
@@ -44,13 +48,9 @@ function normalizeMessages(value: Prisma.JsonValue): Message[] {
         message.role !== "assistant" &&
         message.role !== "system") ||
       typeof message.content !== "string" ||
-      (message.status !== undefined &&
-        message.status !== "streaming" &&
-        message.status !== "completed" &&
-        message.status !== "stopped" &&
-        message.status !== "timeout" &&
-        message.status !== "request_aborted" &&
-        message.status !== "upstream_interrupted")
+      (message.status !== undefined && !isAIMessageStatus(message.status)) ||
+      (message.failureReason !== undefined &&
+        !isAIMessageFailureReason(message.failureReason))
     ) {
       return [];
     }
@@ -76,6 +76,15 @@ function normalizeMessages(value: Prisma.JsonValue): Message[] {
           ? { totalDurationMs: message.totalDurationMs }
           : {}),
         ...(message.status !== undefined ? { status: message.status } : {}),
+        ...(message.failureReason !== undefined
+          ? { failureReason: message.failureReason }
+          : {}),
+        ...(typeof message.errorMessage === "string"
+          ? { errorMessage: message.errorMessage }
+          : {}),
+        ...(typeof message.upstreamStatusCode === "number"
+          ? { upstreamStatusCode: message.upstreamStatusCode }
+          : {}),
       },
     ];
   });
