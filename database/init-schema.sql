@@ -8,13 +8,42 @@ CREATE SCHEMA yesand;
 -- 第三步：把所有权给 postgres（防止任何权限问题）
 ALTER SCHEMA yesand OWNER TO postgres;
 
--- 第四步：给常用角色全开权限（本地开发保险起见）
-GRANT ALL ON SCHEMA yesand TO postgres;
-GRANT ALL ON SCHEMA yesand TO anon;
-GRANT ALL ON SCHEMA yesand TO authenticated;
-GRANT ALL ON SCHEMA yesand TO service_role;
+REVOKE ALL ON SCHEMA yesand FROM anon, authenticated, service_role;
+REVOKE ALL ON ALL TABLES IN SCHEMA yesand FROM anon, authenticated, service_role;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA yesand FROM anon, authenticated, service_role;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA yesand FROM anon, authenticated, service_role;
 
--- 第五步：以后在这个 schema 里建的表默认关闭 RLS（本地开发神器）
-ALTER DEFAULT PRIVILEGES IN SCHEMA yesand REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
-ALTER DEFAULT PRIVILEGES IN SCHEMA yesand GRANT ALL ON TABLES TO postgres, anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES IN SCHEMA yesand GRANT ALL ON SEQUENCES TO postgres, anon, authenticated, service_role;
+REVOKE ALL ON SCHEMA yesand FROM PUBLIC;
+REVOKE ALL ON ALL TABLES IN SCHEMA yesand FROM PUBLIC;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA yesand FROM PUBLIC;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA yesand FROM PUBLIC;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_roles WHERE rolname = 'yesand_app'
+  ) THEN
+    CREATE ROLE yesand_app
+      LOGIN
+      PASSWORD 'XXXyesand_app';
+  END IF;
+END
+$$;
+
+GRANT CONNECT ON DATABASE postgres TO yesand_app;
+GRANT USAGE ON SCHEMA yesand TO yesand_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA yesand TO yesand_app;
+GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA yesand TO yesand_app;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA yesand TO yesand_app;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA yesand
+  REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA yesand
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO yesand_app;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA yesand
+  GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO yesand_app;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA yesand
+  GRANT EXECUTE ON FUNCTIONS TO yesand_app;
